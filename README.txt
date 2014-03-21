@@ -1,5 +1,7 @@
 
-Chromium native-client version of dsn-live HTTP/1.1 persistent connection.
+Chromium native-client version of dsn-live.
 
-See http://w.syntelos.net/dsn-live-nacl
+  Status: in development
+
+  Location: http://w.syntelos.net/dsn-live-nacl
 
