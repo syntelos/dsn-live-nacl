@@ -53,46 +53,49 @@ public:
           width(0),
           height(0)
     {
-        std::fprintf(stderr,"NaCl: Instantiated module instance.\n");
+        std::cerr << "NaCl: Instantiated module instance." << std::endl;
     }
     virtual ~DSNLInstance()
     {}
 
     virtual void HandleMessage(const pp::Var& var_message) {
 
-        std::cout << "Received message " << var_message.AsString() << std::endl;
+        std::cerr << "Received message '" << var_message.AsString() << "'." << std::endl;
     }
     virtual bool Init(uint32_t argc, const char* argn[], const char* argv[]) {
 
+        uint32_t cc;
+        for (cc = 0; cc < argc; cc++){
+            const char* n = argn[cc];
+            const char* v = argv[cc];
+
+            std::cerr << "NaCl: init (" << n << ": " << v << ")" << std::endl;
+        }
         SendMessage("NaCl: Initialized module instance.");
 
         return true;
     }
     virtual void DidChangeView(const pp::View& view) {
-        int32_t new_width = view.GetRect().width();
-        int32_t new_height = view.GetRect().height();
+        pp::Rect rect = view.GetRect();
+        int32_t new_width = rect.width();
+        int32_t new_height = rect.height();
 
         if (context.is_null()) {
             if (InitGL(new_width, new_height)){
                 InitShaders();
                 InitBuffers();
                 MainLoop(0);
-
-                SendMessage("NaCl: Initialized GL context.");
             }
             else {
-                std::fprintf(stderr,"NaCl: Failed to initialize GL context.\n");
+                std::cerr << "NaCl: Failed to initialize GL context in change view." << std::endl;
                 return;
             }
         }
         else {
             int32_t result = context.ResizeBuffers(new_width, new_height);
             if (0 > result){
-                std::fprintf(stderr, "NaCl: Failed to resize buffers to %d x %d.\n",new_width,new_height);
+                std::cerr << "NaCl: Failed to resize buffers in change view." << std::endl;
                 return;
-            }
-            else {
-                SendMessage("NaCl: Resized buffers.");
             }
         }
 
@@ -100,6 +103,8 @@ public:
         height = new_height;
 
         glViewport(0, 0, width, height);
+
+        SendMessage("NaCl: Initialized graphics in change view.");
     }
 private:
 
@@ -123,14 +128,15 @@ private:
                 return true;
             }
             else {
-                fprintf(stderr, "NaCl: Unable to bind GL context.\n");
+                std::cerr << "NaCl: Unable to bind GL context." << std::endl;
+
                 context = pp::Graphics3D();
                 glSetCurrentContextPPAPI(0);
                 return false;
             }
         }
         else {
-            std::fprintf(stderr, "NaCl: Unable to initialize GL PPAPI.\n");
+            std::cerr << "NaCl: Unable to initialize GL PPAPI." << std::endl;
             return false;
         }
     }
@@ -151,6 +157,9 @@ private:
         context.SwapBuffers(callback_factory.NewCallback(&DSNLInstance::MainLoop));
     }
     void SendMessage(const char* m){
+
+        std::cerr << "SendMessage: '" << m << "'." << std::endl;
+
         pp::Var v(m);
         PostMessage(v);
     }
