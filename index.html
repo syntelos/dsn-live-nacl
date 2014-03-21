@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html>
+  <!--
+    -  Copyright (c) 2014 John Pritchard, Syntelos.  See BSD.txt.
+    -  Copyright (c) 2013 The Chromium Authors. All rights reserved.
+    -  Use of this source code is governed by a BSD-style license that can be
+    -  found in the BSD.txt file.
+    -->
+  <head>
+    <title>w.syntelos.net/dsn-live-nacl</title>
+    <style type="text/css">
+      body {
+        margin: 0px;
+        padding: 0px;
+        background-color: #0066b3;
+        color: #ffffff;
+        font-family: verdana, helvetica, sans-serif;
+      }
+      a {
+        color: #ffffff;
+      }
+      div#nacl {
+        position: absolute;
+        top: 0px;
+        left: 0px;
+        margin: 0px;
+        padding: 0px;
+        width: 100%;
+        height: 100%;
+        background-color: #0066b3;
+        color: #ffffff;
+      }
+      embed#nacl_module {
+        margin: 0px;
+        padding: 0px;
+        width: 100%;
+        height: 100%;
+      }
+      div#failure {
+        position: absolute;
+        top: 0px;
+        left: 0px;
+        margin: 0px;
+        padding: 0px;
+        width: 100%;
+        height: 100%;
+        background-color: #0066b3;
+        color: #ffffff;
+        display: none;
+      }
+      p.failure1 {
+        background-color: #0066b3;
+        color: #ffffff;
+        margin-top: 100px;
+        margin-left: 80px;
+        font-weight: 900;
+        font-size: 18px;
+      }
+      p.failure2 {
+        background-color: #0066b3;
+        color: #efefef;
+        margin-top: 10px;
+        margin-left: 100px;
+        font-weight: 900;
+        font-size: 14px;
+      }
+    </style>
+    <script type="text/javascript">
+      var naclReady = false;
+
+      function naclMessage(message_event) {
+
+        naclReady = true;
+        try {
+          var js_data = JSON.parse(message_event.data);
+
+          if (js_data.log){
+
+            if (js_data.message){
+              console.log(js_data.message);
+            }
+            else {
+              alert("HTML: NaCl 'log' missing 'message'.");
+            }
+          }
+          else if (js_data.alert){
+
+            if (js_data.message){
+              alert(js_data.message);
+            }
+            else {
+              alert("HTML: NaCl 'alert' missing 'message'.");
+            }
+          }
+          else if (js_data.body){
+
+            if (js_data.content){
+              document.body.innerHTML = js_data.content;
+            }
+            else {
+              alert("HTML: NaCl 'body' missing 'content'.");
+            }
+          }
+          else {
+            console.log(message_event.data);
+          }
+        }
+        catch (x){
+          console.log(message_event.data);
+        }
+      }
+      function naclTest(){
+
+        if (naclReady){
+          console.log("HTML test OK");
+        }
+        else {
+          console.log("HTML test NG");
+          naclHide();
+        }
+      }
+      function naclHide(){
+        try {
+          var el_nacl = document.getElementById("nacl");
+          el_nacl.style.display = "none";
+        }
+        catch (x){
+        }
+        try {
+          var el_fail = document.getElementById("failure");
+          el_fail.style.display = "block";
+        }
+        catch (x){
+        }
+      }
+      function naclShow(){
+        try {
+          var el_nacl = document.getElementById("nacl");
+          el_nacl.style.display = "block";
+        }
+        catch (x){
+        }
+        try {
+          var el_fail = document.getElementById("failure");
+          el_fail.style.display = "none";
+        }
+        catch (x){
+        }
+      }
+    </script>
+  </head>
+  <body>
+
+    <div id="nacl">
+      <script type="text/javascript">
+
+        var listener = document.getElementById("nacl");
+
+        listener.addEventListener("message", naclMessage, true);
+      </script>
+
+      <embed id="nacl_module" width="100%" height="100%" src="dsn-live-nacl.nmf" type="application/x-pnacl" />
+
+      <script type="text/javascript">
+
+        setTimeout(naclTest,2000);
+      </script>
+    </div>
+
+    <div id="failure">
+
+      <p class="failure1"> App failed! </p>
+      <p class="failure2"> Requires <a href="http://www.google.com/chrome/">Chrome</a> &amp; <a href="http://support.google.com/chrome/search?q=native+client">Native Client</a>. </p>
+      <p class="failure2"> Get or upgrade <a href="http://www.google.com/chrome/">Chrome</a> to the latest version. </p>
+      <p class="failure2"> For linux, get Chrome from <a href="http://www.google.com/linuxrepositories/">linuxrepositories</a>. </p>
+    </div>
+  </body>
+</html>
