@@ -18,8 +18,8 @@ var spinner_conf = {
   hwaccel: false,
   className: 'spinner',
   zIndex: 2e9,
-  top: '50%',
-  left: '50%'
+  top: '49%',
+  left: '49%'
 };
 
 function dsnlMessage(nacl_msg){

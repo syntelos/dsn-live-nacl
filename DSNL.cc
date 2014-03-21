@@ -32,7 +32,8 @@
 #include "ppapi/lib/gl/gles2/gl2ext_ppapi.h"
 #include "ppapi/utility/completion_callback_factory.h"
 
-#include "matrix.h"
+#include "Matrix.h"
+#include "FontFutural.h"
 
 /*!
  * 
