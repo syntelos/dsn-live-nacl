@@ -32,7 +32,9 @@
 #include "ppapi/lib/gl/gles2/gl2ext_ppapi.h"
 #include "ppapi/utility/completion_callback_factory.h"
 
-#include "Matrix.h"
+#include "glh.h"
+#include "Fv3Color.h"
+#include "Fv3Matrix.h"
 #include "FontFutural.h"
 #include "Shaders.h"
 
@@ -159,19 +161,15 @@ private:
 
         glUseProgram(line);
 
-        Matrix camera;
-
-        GLfloat color_white_opaque[] = {1.0,1.0,1.0,1.0};
-
-        identity_matrix(camera);
+        Fv3Matrix camera(Fv3Matrix::ID);
 
         const float aspect = (width/height);
 
         glhPerspectivef2(camera,45.0,aspect,1.0,10.0);
 
-        glUniformMatrix4fv(line_camera,1,GL_FALSE,camera);
+        glUniformMatrix4fv(line_camera,1,GL_FALSE,camera.array);
 
-        glUniform4fv(line_color,1,color_white_opaque);
+        glUniform4fv(line_color,1,Fv3Color::White.array);
 
         glBindBuffer(GL_ARRAY_BUFFER, string->vertex_buffer);
 
@@ -187,7 +185,7 @@ private:
 
         glGenBuffers(1,&vertex_buffer);
         glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer);
-        glBufferData(GL_ARRAY_BUFFER, (string->length*sizeof(float)), &(string->vertices),GL_STATIC_DRAW);
+        glBufferData(GL_ARRAY_BUFFER, (string->array_length*sizeof(float)), string->array, GL_STATIC_DRAW);
 
     }
     void InitProgram(){

@@ -19,7 +19,8 @@ CXXFLAGS := $(DOPT) -pthread -std=gnu++98 $(WARNINGS) -I$(NACL_SDK_ROOT)/include
 
 LDFLAGS := -L$(NACL_SDK_ROOT)/lib/pnacl/Release -lppapi_gles2 -lppapi_cpp -lppapi -lpthread
 
-SOURCES := DSNL.cc Matrix.cc Font.cc FontFutural.cc
+SOURCES := DSNL.cc Font.cc FontFutural.cc Fv3Color.cc Fv3Matrix.cc Fv3Vector.cc Fv3VertexArray.cc glh.cc
+
 
 
 all: dsn-live-nacl.pexe  # (serve: all)

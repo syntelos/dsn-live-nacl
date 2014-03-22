@@ -26,20 +26,35 @@ Font::Font(float em, float ascent, float descent, float leading, GLushort mode)
     : em(em), ascent(ascent), descent(descent), leading(leading), mode(mode)
 {
 }
-FontGlyphVector::FontGlyphVector(const Font& font, const char* string)
-    : font(font),
+FontGlyphVector::FontGlyphVector(const Font& font)
+    : Fv3VertexArray(font.mode),
+      xp(0),
+      font(font),
       minX(0), midX(0), maxX(0),
       minY(0), midY(0), maxY(0),
       minZ(0), midZ(0), maxZ(0),
-      length(0), count(0), vertices(0),
-      vertex_buffer(0)
+      count(0)
 {
+}
+FontGlyphVector::FontGlyphVector(const Font& font, const char* string)
+    : Fv3VertexArray(font.mode),
+      xp(0),
+      font(font),
+      minX(0), midX(0), maxX(0),
+      minY(0), midY(0), maxY(0),
+      minZ(0), midZ(0), maxZ(0),
+      count(0)
+{
+    append_ltr(string);
+}
+FontGlyphVector::~FontGlyphVector(){
+}
+void FontGlyphVector::append_ltr(const char*string){
     unsigned int string_len = std::strlen(string);
     if (0 < string_len){
         /*
          * build vertex array for string
          */
-        float xp = 0;
         unsigned int cc;
         for (cc = 0; cc < string_len; cc++){
 
@@ -54,16 +69,15 @@ FontGlyphVector::FontGlyphVector(const Font& font, const char* string)
                 /*
                  * copy glyph into string memory
                  */
-                unsigned int nlen = (length+glyph->length);
+                const unsigned int olen = array_length;
+                const unsigned int nlen = (olen+glyph->length);
+                /*
+                 */
+                append(glyph->length,glyph->vertices);
 
-                vertices = (float*)std::realloc(vertices,(nlen*sizeof(float)));
+                if (array){
 
-                if (vertices){
-
-                    float* fp = &(vertices[length]);
-
-                    std::memcpy(fp,glyph->vertices,(glyph->length*sizeof(float)));
-
+                    float* fp = &(array[olen]);
                     /*
                      * translate glyph into string geometry
                      */
@@ -94,7 +108,6 @@ FontGlyphVector::FontGlyphVector(const Font& font, const char* string)
                     /*
                      * update glyph vector state
                      */
-                    length = nlen;
                     count = (nlen/3);
 
                     midX = (minX+maxX)/2.0;
@@ -102,13 +115,9 @@ FontGlyphVector::FontGlyphVector(const Font& font, const char* string)
                     midZ = (minZ+maxZ)/2.0;
                 }
                 else {
-                    return;
+                    count = 0;
                 }
             }
         }
     }
-}
-FontGlyphVector::~FontGlyphVector(){
-
-    delete vertices;
 }

@@ -86,7 +86,7 @@ EOF
     #
     if ${emit_source}
     then
-        source=${class}.cpp
+        source=${class}.cc
 
         cp HEAD.txt ${source}
         cat<<EOF >> ${source}

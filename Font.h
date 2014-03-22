@@ -18,7 +18,7 @@
 #ifndef _DSNL_FONT_H
 #define _DSNL_FONT_H
 
-#include "ppapi/lib/gl/gles2/gl2ext_ppapi.h"
+#include "Fv3VertexArray.h"
 
 
 struct FontGlyph {
@@ -54,7 +54,10 @@ class Font {
 };
 /*
  */
-class FontGlyphVector {
+class FontGlyphVector : public Fv3VertexArray {
+
+    float xp;
+
  public:
     const Font& font;
 
@@ -67,13 +70,21 @@ class FontGlyphVector {
     float minZ;
     float midZ;
     float maxZ;
-    unsigned int length;  // length of vertices array (number of floats)
-    unsigned int count;  // number of 3-vertices (length/3)
-    float* vertices;
-    GLuint vertex_buffer;
 
+    unsigned int count;  // number of 3-vertices
+
+
+    FontGlyphVector(const Font&);
+    /*!
+     * Append characters left to right (X+).
+     */
     FontGlyphVector(const Font&,const char*);
-    ~FontGlyphVector();
+    virtual ~FontGlyphVector();
+
+    /*!
+     * Append characters left to right (X+).
+     */
+    void append_ltr(const char*);
 };
 
 #endif
