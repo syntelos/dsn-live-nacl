@@ -18,8 +18,6 @@
 #ifndef _DSNL_FONT_H
 #define _DSNL_FONT_H
 
-#include <vector>
-
 #include "ppapi/lib/gl/gles2/gl2ext_ppapi.h"
 
 
@@ -52,6 +50,30 @@ class Font {
 
     Font(float em, float ascent, float descent, float leading, GLushort mode);
 
-    virtual const FontGlyph* get(char) = 0;
+    virtual const FontGlyph* get(char) const = 0;
 };
+/*
+ */
+class FontGlyphVector {
+ public:
+    const Font& font;
+
+    float minX;
+    float midX;
+    float maxX;
+    float minY;
+    float midY;
+    float maxY;
+    float minZ;
+    float midZ;
+    float maxZ;
+    unsigned int length;  // length of vertices array (number of floats)
+    unsigned int count;  // number of 3-vertices (length/3)
+    float* vertices;
+    GLuint vertex_buffer;
+
+    FontGlyphVector(const Font&,const char*);
+    ~FontGlyphVector();
+};
+
 #endif

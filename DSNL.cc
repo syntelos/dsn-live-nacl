@@ -34,6 +34,7 @@
 
 #include "Matrix.h"
 #include "FontFutural.h"
+#include "Shaders.h"
 
 /*!
  * 
@@ -44,6 +45,14 @@ class DSNLInstance : public pp::Instance {
     pp::Graphics3D context;
     int32_t width;
     int32_t height;
+
+    GLuint line_vert;
+    GLuint line_frag;
+    GLuint line;
+    GLuint line_color;
+    GLuint line_camera;
+
+    FontGlyphVector *string;
 
 
 public:
@@ -83,7 +92,7 @@ public:
 
         if (context.is_null()) {
             if (InitGL(new_width, new_height)){
-                InitShaders();
+                InitProgram();
                 InitBuffers();
                 MainLoop(0);
             }
@@ -107,6 +116,7 @@ public:
 
         SendMessage("NaCl: Initialized graphics in change view.");
     }
+
 private:
 
     bool InitGL(int32_t new_width, int32_t new_height) {
@@ -141,21 +151,106 @@ private:
             return false;
         }
     }
-    void InitShaders(){
-    }
-    void InitBuffers(){
-    }
     void Render() {
         glClearColor(0.0, 0.4, 0.7, 1);
         glClearDepthf(1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glEnable(GL_DEPTH_TEST);
+
+        glUseProgram(line);
+
+        Matrix camera;
+
+        GLfloat color_white_opaque[] = {1.0,1.0,1.0,1.0};
+
+        identity_matrix(camera);
+
+        const float aspect = (width/height);
+
+        glhPerspectivef2(camera,45.0,aspect,1.0,10.0);
+
+        glUniformMatrix4fv(line_camera,1,GL_FALSE,camera);
+
+        glUniform4fv(line_color,1,color_white_opaque);
+
+        glBindBuffer(GL_ARRAY_BUFFER, string->vertex_buffer);
+
+        glDrawElements(GL_LINES, string->count/2, GL_UNSIGNED_BYTE, 0);
+    }
+    void InitBuffers(){
+
+        FontFutural font;
+
+        string = new FontGlyphVector(font,"string");
+
+        GLuint& vertex_buffer = string->vertex_buffer;
+
+        glGenBuffers(1,&vertex_buffer);
+        glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer);
+        glBufferData(GL_ARRAY_BUFFER, (string->length*sizeof(float)), &(string->vertices),GL_STATIC_DRAW);
+
+    }
+    void InitProgram(){
+
+        line_frag = ShaderCompile(GL_FRAGMENT_SHADER,"LineFrag",LineFrag);
+        if (0 != line_frag){
+
+            line_vert = ShaderCompile(GL_VERTEX_SHADER,"LineVert",LineVert);
+            if (0 != line_vert){
+
+                line = ProgramLink(line_frag,line_vert,"Line");
+                if (0 != line){
+
+                    line_camera = glGetUniformLocation(line,"u_camera");
+                    line_color = glGetUniformLocation(line,"u_color");
+                }
+            }
+        }
     }
     void MainLoop(int32_t) {
 
         Render();
 
         context.SwapBuffers(callback_factory.NewCallback(&DSNLInstance::MainLoop));
+    }
+    static GLuint ShaderCompile(GLenum type, const char* name, const char* text){
+        GLuint shader = glCreateShader(type);
+        {
+            glShaderSource(shader,1,&text,0);
+            glCompileShader(shader);
+        }
+        GLint status;
+        glGetShaderiv(shader,GL_COMPILE_STATUS,&status);
+        if (GL_TRUE == status){
+            return shader;
+        }
+        else {
+            char erbuf[1024];
+            GLsizei output;
+            glGetShaderInfoLog(shader,sizeof(erbuf),&output,erbuf);
+            std::cerr << "Shader '" << name << "' failed to compile: " << erbuf << std::endl;
+            return 0;
+        }
+    }
+    static GLuint ProgramLink(GLuint frag, GLuint vert, const char* name){
+        GLuint program = glCreateProgram();
+        {
+            glAttachShader(program,frag);
+            glAttachShader(program,vert);
+            glLinkProgram(program);
+        }
+        GLint status;
+        glGetProgramiv(program,GL_LINK_STATUS,&status);
+        if (GL_TRUE == status){
+            return program;
+        }
+        else {
+            char erbuf[1024];
+            GLsizei output;
+            glGetProgramInfoLog(program,sizeof(erbuf),&output,erbuf);
+            std::cerr << "Program '" << name << "' failed to link: " << erbuf << std::endl;
+            return 0;
+        }
     }
     void SendMessage(const char* m){
 

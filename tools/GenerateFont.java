@@ -102,7 +102,7 @@ public class GenerateFont {
                     out.println();
                     out.printf ("    %s();%n",cn);
                     out.println();
-                    out.println("    virtual const FontGlyph* get(char);");
+                    out.println("    virtual const FontGlyph* get(char) const;");
                     out.println();
                     out.println("};");
                     out.println();
@@ -231,7 +231,7 @@ public class GenerateFont {
                     out.printf ("    : Font(%s_EM,%s_ASCENT,%s_DESCENT,%s_LEADING,%s_MODE)%n",cn,cn,cn,cn,cn);
                     out.println("{}");
                     out.println();
-                    out.printf ("const FontGlyph* %s::get(char ch){%n",cn);
+                    out.printf ("const FontGlyph* %s::get(char ch) const {%n",cn);
                     out.println("    if (' ' >= ch){");
                     out.println("        return &(GlyphSet[0]);");
                     out.println("    }");

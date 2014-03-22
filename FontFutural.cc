@@ -3712,7 +3712,7 @@ FontFutural::FontFutural()
     : Font(FontFutural_EM,FontFutural_ASCENT,FontFutural_DESCENT,FontFutural_LEADING,FontFutural_MODE)
 {}
 
-const FontGlyph* FontFutural::get(char ch){
+const FontGlyph* FontFutural::get(char ch) const {
     if (' ' >= ch){
         return &(GlyphSet[0]);
     }

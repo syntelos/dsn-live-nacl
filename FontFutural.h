@@ -131,7 +131,7 @@ class FontFutural : public Font {
 
     FontFutural();
 
-    virtual const FontGlyph* get(char);
+    virtual const FontGlyph* get(char) const;
 
 };
 

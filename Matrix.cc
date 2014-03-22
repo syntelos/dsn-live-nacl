@@ -12,7 +12,7 @@
 #include "Matrix.h"
 #define deg_to_rad(x) (x * (M_PI / 180.0f))
 
-void glhFrustumf2(Matrix_t mat,
+void glhFrustumf2(Matrix mat,
                   GLfloat left,
                   GLfloat right,
                   GLfloat bottom,
@@ -42,7 +42,7 @@ void glhFrustumf2(Matrix_t mat,
   mat[15] = 0.0f;
 }
 
-void glhPerspectivef2(Matrix_t mat,
+void glhPerspectivef2(Matrix mat,
                       GLfloat fovyInDegrees,
                       GLfloat aspectRatio,
                       GLfloat znear,
@@ -53,18 +53,18 @@ void glhPerspectivef2(Matrix_t mat,
   glhFrustumf2(mat, -xmax, xmax, -ymax, ymax, znear, zfar);
 }
 
-void identity_matrix(Matrix_t mat) {
-  memset(mat, 0, sizeof(Matrix_t));
+void identity_matrix(Matrix mat) {
+  memset(mat, 0, sizeof(Matrix));
   mat[0] = 1.0;
   mat[5] = 1.0;
   mat[10] = 1.0;
   mat[15] = 1.0;
 }
 
-void multiply_matrix(const Matrix_t a, const Matrix_t b, Matrix_t mat) {
+void multiply_matrix(const Matrix a, const Matrix b, Matrix mat) {
   // Generate to a temporary first in case the output matrix and input
   // matrix are the same.
-  Matrix_t out;
+  Matrix out;
 
   out[0] = a[0] * b[0] + a[4] * b[1] + a[8] * b[2] + a[12] * b[3];
   out[1] = a[1] * b[0] + a[5] * b[1] + a[9] * b[2] + a[13] * b[3];
@@ -86,10 +86,10 @@ void multiply_matrix(const Matrix_t a, const Matrix_t b, Matrix_t mat) {
   out[14] = a[2] * b[12] + a[6] * b[13] + a[10] * b[14] + a[14] * b[15];
   out[15] = a[3] * b[12] + a[7] * b[13] + a[11] * b[14] + a[15] * b[15];
 
-  memcpy(mat, out, sizeof(Matrix_t));
+  memcpy(mat, out, sizeof(Matrix));
 }
 
-void rotate_x_matrix(GLfloat x_rad, Matrix_t mat) {
+void rotate_x_matrix(GLfloat x_rad, Matrix mat) {
   identity_matrix(mat);
   mat[5] = cosf(x_rad);
   mat[6] = -sinf(x_rad);
@@ -97,7 +97,7 @@ void rotate_x_matrix(GLfloat x_rad, Matrix_t mat) {
   mat[10] = mat[5];
 }
 
-void rotate_y_matrix(GLfloat y_rad, Matrix_t mat) {
+void rotate_y_matrix(GLfloat y_rad, Matrix mat) {
   identity_matrix(mat);
   mat[0] = cosf(y_rad);
   mat[2] = sinf(y_rad);
@@ -105,7 +105,7 @@ void rotate_y_matrix(GLfloat y_rad, Matrix_t mat) {
   mat[10] = mat[0];
 }
 
-void rotate_z_matrix(GLfloat z_rad, Matrix_t mat) {
+void rotate_z_matrix(GLfloat z_rad, Matrix mat) {
   identity_matrix(mat);
   mat[0] = cosf(z_rad);
   mat[1] = sinf(z_rad);
@@ -113,25 +113,25 @@ void rotate_z_matrix(GLfloat z_rad, Matrix_t mat) {
   mat[5] = mat[0];
 }
 
-void rotate_matrix(GLfloat x_deg, GLfloat y_deg, GLfloat z_deg, Matrix_t mat) {
+void rotate_matrix(GLfloat x_deg, GLfloat y_deg, GLfloat z_deg, Matrix mat) {
   GLfloat x_rad = (GLfloat) deg_to_rad(x_deg);
   GLfloat y_rad = (GLfloat) deg_to_rad(y_deg);
   GLfloat z_rad = (GLfloat) deg_to_rad(z_deg);
 
-  Matrix_t x_matrix;
-  Matrix_t y_matrix;
-  Matrix_t z_matrix;
+  Matrix x_matrix;
+  Matrix y_matrix;
+  Matrix z_matrix;
 
   rotate_x_matrix(x_rad, x_matrix);
   rotate_y_matrix(y_rad, y_matrix);
   rotate_z_matrix(z_rad, z_matrix);
 
-  Matrix_t xy_matrix;
+  Matrix xy_matrix;
   multiply_matrix(y_matrix, x_matrix, xy_matrix);
   multiply_matrix(z_matrix, xy_matrix, mat);
 }
 
-void translate_matrix(GLfloat x, GLfloat y, GLfloat z, Matrix_t mat) {
+void translate_matrix(GLfloat x, GLfloat y, GLfloat z, Matrix mat) {
   identity_matrix(mat);
   mat[12] += x;
   mat[13] += y;
