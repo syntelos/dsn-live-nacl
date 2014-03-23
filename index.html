@@ -5,31 +5,37 @@
     <link rel="icon" type="image/x-icon" href="/favicon.ico" />
     <link rel="stylesheet" type="text/css" href="etc/dsnl.css" />
     <script type="text/javascript" src="etc/spin.js"></script>
+    <script type="text/javascript" src="etc/nacl.js"></script>
     <script type="text/javascript" src="etc/dsnl.js"></script>
   </head>
   <body onload="dsnlInit()">
-    <div id="loading">
+    <div class="main secondary" id="loading">
     </div>
-    <div id="failure">
+    <div class="main secondary" id="unavailable">
 
-      <p class="failure1"> App failed! </p>
-      <p class="failure2"> Requires <a href="http://www.google.com/chrome/">Chrome</a> &amp; <a href="http://support.google.com/chrome/search?q=native+client">Native Client</a>. </p>
-      <p class="failure2"> Get or upgrade <a href="http://www.google.com/chrome/">Chrome</a> to the latest version. </p>
+      <p class="failure1"> App unavailable! </p>
+      <p class="failure2"> It's not your fault.  Please try again tomorrow or next week. </p>
+    </div>
+    <div class="main secondary" id="unsupported">
+
+      <p class="failure1"> Unsupported browser! </p>
+      <p class="failure2"> Requires <a href="http://www.chrome.com/">Chrome</a> &amp; <a href="http://developer.chrome.com/native-client/">Native Client</a>. </p>
+      <p class="failure2"> Get or upgrade <a href="http://www.chrome.com/">Chrome</a> to the latest version. </p>
       <p class="failure2"> For linux, get Chrome from <a href="http://www.google.com/linuxrepositories/">linuxrepositories</a>. </p>
     </div>
-    <div id="nacl">
+    <div class="main primary" id="nacl">
       <script type="text/javascript">
 
         var listener = document.getElementById("nacl");
 
+        listener.addEventListener("load", dsnlLoad, true);
         listener.addEventListener("message", dsnlMessage, true);
+        listener.addEventListener("crash", dsnlCrash, true);
+        listener.addEventListener("error", dsnlError, true);
       </script>
 
-      <embed id="nacl_module" width="100%" height="100%" src="dsn-live-nacl.nmf" type="application/x-pnacl" />
-    </div>
-    <script type="text/javascript">
+      <embed id="nacl_module" width="100%" height="98%" src="dsn-live-nacl.nmf" type="application/x-pnacl" />
 
-      setTimeout(dsnlTest,60000);
-    </script>
+    </div>
   </body>
 </html>

@@ -3711,6 +3711,8 @@ const FontGlyph FontFutural::GlyphSet[FontFutural_COUNT] = {
 FontFutural::FontFutural()
     : Font(FontFutural_EM,FontFutural_ASCENT,FontFutural_DESCENT,FontFutural_LEADING,FontFutural_MODE)
 {}
+FontFutural::~FontFutural()
+{}
 
 const FontGlyph* FontFutural::get(char ch) const {
     if (' ' >= ch){

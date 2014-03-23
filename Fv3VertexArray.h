@@ -28,6 +28,15 @@ class Fv3VertexArray : public Fv3 {
  public:
     unsigned int array_length;
     float* array;
+    float minX;
+    float midX;
+    float maxX;
+    float minY;
+    float midY;
+    float maxY;
+    float minZ;
+    float midZ;
+    float maxZ;
     GLushort type;
     GLuint vertex_buffer;
 
@@ -53,6 +62,10 @@ class Fv3VertexArray : public Fv3 {
     void append(const Fv3VertexArray&);
 
     void append(const unsigned int, const float*);
+    /*!
+     * Scan 3-vectors to update boundary statistics.
+     */
+    void bounds();
 
 };
 #endif

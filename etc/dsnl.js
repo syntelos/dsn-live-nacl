@@ -1,26 +1,10 @@
 /*
- * 
+ * DSN Live HTML application layer
+ *
+ * Requires 'spin.js', 'nacl.js'.
  */
-var dsnlReady = false;
-var spinner = null;
-var spinner_conf = {
-  lines: 12,
-  length: 0,
-  width: 25,
-  radius: 60,
-  corners: 1,
-  rotate: 0,
-  direction: 1,
-  color: '#efefef',
-  speed: 1,
-  trail: 60,
-  shadow: false,
-  hwaccel: false,
-  className: 'spinner',
-  zIndex: 2e9,
-  top: '49%',
-  left: '49%'
-};
+var dsnlRunning = false;
+var dsnlSpinner = null;
 
 function dsnlMessage(nacl_msg){
 
@@ -65,52 +49,90 @@ function dsnlMessage(nacl_msg){
 }
 function dsnlTest(){
 
-    if (dsnlReady){
+    if (dsnlRunning){
         console.log("HTML dsnlTest(): OK");
     }
     else {
         console.log("HTML dsnlTest(): NG");
 
-        dsnlHide();
+        dsnlUnavailable();
     }
 }
-function dsnlHide(){
+function dsnlUnavailable(){
     try {
-        var el_nacl = document.getElementById("nacl");
-        el_nacl.style.display = "none";
+        var el = document.getElementById("nacl");
+        el.style.display = "none";
     }
     catch (x){
-        console.log("HTML: dsnlHide(): Failed nacl hide.");
+        console.log("HTML: dsnlUnavailable(): Failed nacl hide.");
     }
     try {
         var el = document.getElementById("loading");
         el.style.display = "none";
     }
     catch (x){
-        console.log("HTML: dsnlHide(): Failed loading hide.");
+        console.log("HTML: dsnlUnavailable(): Failed loading hide.");
     }
     try {
-        spinner.stop();
+        if (dsnlSpinner){
+
+            dsnlSpinner.stop();
+        }
     }
     catch (x){
-        console.log("HTML: dsnlHide(): Failed spinner stop.");
+        console.log("HTML: dsnlUnavailable(): Failed dsnlSpinner stop.");
     }
     try {
-        var el_fail = document.getElementById("failure");
-        el_fail.style.display = "block";
+        var el = document.getElementById("unavailable");
+        el.style.display = "block";
     }
     catch (x){
-        console.log("HTML: dsnlHide(): Failed failure show.");
+        console.log("HTML: dsnlUnavailable(): Failed failure show.");
+    }
+}
+function dsnlUnsupported(){
+    try {
+        var el = document.getElementById("nacl");
+        el.style.display = "none";
+    }
+    catch (x){
+        console.log("HTML: dsnlUnsupported(): Failed nacl hide.");
+    }
+    try {
+        var el = document.getElementById("loading");
+        el.style.display = "none";
+    }
+    catch (x){
+        console.log("HTML: dsnlUnsupported(): Failed loading hide.");
+    }
+    try {
+        if (dsnlSpinner){
+
+            dsnlSpinner.stop();
+        }
+    }
+    catch (x){
+        console.log("HTML: dsnlUnsupported(): Failed dsnlSpinner stop.");
+    }
+    try {
+        var el = document.getElementById("unsupported");
+        el.style.display = "block";
+    }
+    catch (x){
+        console.log("HTML: dsnlUnsupported(): Failed failure show.");
     }
 }
 function dsnlShow(){
-    if (!dsnlReady){
-        dsnlReady = true;
+    if (!dsnlRunning){
+        dsnlRunning = true;
         try {
-            spinner.stop();
+            if (dsnlSpinner){
+
+                dsnlSpinner.stop();
+            }
         }
         catch (x){
-            console.log("HTML: dsnlShow(): Failed spinner stop.");
+            console.log("HTML: dsnlShow(): Failed dsnlSpinner stop.");
         }
         try {
             var el = document.getElementById("loading");
@@ -122,15 +144,54 @@ function dsnlShow(){
     }
 }
 function dsnlInit(){
-    if (!dsnlReady){
-        spinner = new Spinner(spinner_conf).spin();
+    /*
+     * Requires 'nacl.js'
+     */
+    if (!nacl.supported){
+
+        dsnlUnsupported();
+    }
+    else if (!dsnlRunning){
+
+        var spinner_conf = {
+            lines: 12,
+            length: 0,
+            width: 25,
+            radius: 60,
+            corners: 1,
+            rotate: 0,
+            direction: 1,
+            color: '#efefef',
+            speed: 1,
+            trail: 60,
+            shadow: false,
+            hwaccel: false,
+            className: 'spinner',
+            zIndex: 2e9,
+            top: '50%',
+            left: '50%'
+        };
+        dsnlSpinner = new Spinner(spinner_conf).spin();
+
         var el_loading = document.getElementById("loading");
         if (el_loading){
 
-            el_loading.appendChild(spinner.el);
+            el_loading.appendChild(dsnlSpinner.el);
         }
         else {
-            console.log("HTML: Failed to append 'spinner' to 'loading'.");
+            console.log("HTML: Failed to append 'dsnlSpinner' to 'loading'.");
         }
+
+        setTimeout(dsnlTest,60000);
     }
+}
+function dsnlLoad(evt){
+    console.log("HTML: dsnlLoad(): "+evt);
+}
+function dsnlCrash(evt){
+    console.log("HTML: dsnlCrash(): "+evt);
+    dsnlUnavailable();
+}
+function dsnlError(evt){
+    console.log("HTML: dsnlError(): "+evt);
 }

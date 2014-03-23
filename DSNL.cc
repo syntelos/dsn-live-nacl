@@ -48,11 +48,11 @@ class DSNLInstance : public pp::Instance {
     int32_t width;
     int32_t height;
 
-    GLuint line_vert;
-    GLuint line_frag;
-    GLuint line;
-    GLuint line_color;
-    GLuint line_camera;
+    GLuint prog_vert;
+    GLuint prog_frag;
+    GLuint prog;
+    GLuint prog_color;
+    GLuint prog_camera;
 
     FontGlyphVector *string;
 
@@ -159,17 +159,17 @@ private:
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glEnable(GL_DEPTH_TEST);
 
-        glUseProgram(line);
+        glUseProgram(prog);
 
         Fv3Matrix camera(Fv3Matrix::ID);
 
         const float aspect = (width/height);
 
-        glhPerspectivef2(camera,45.0,aspect,1.0,10.0);
+        glhPerspectivef2(camera,45.0,aspect,0.0,10.0);
 
-        glUniformMatrix4fv(line_camera,1,GL_FALSE,camera.array);
+        glUniformMatrix4fv(prog_camera,1,GL_FALSE,camera.array);
 
-        glUniform4fv(line_color,1,Fv3Color::White.array);
+        glUniform4fv(prog_color,1,Fv3Color::White.array);
 
         glBindBuffer(GL_ARRAY_BUFFER, string->vertex_buffer);
 
@@ -181,26 +181,26 @@ private:
 
         string = new FontGlyphVector(font,"string");
 
-        GLuint& vertex_buffer = string->vertex_buffer;
+        glGenBuffers(1,&(string->vertex_buffer));
 
-        glGenBuffers(1,&vertex_buffer);
-        glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer);
+        glBindBuffer(GL_ARRAY_BUFFER, string->vertex_buffer);
+
         glBufferData(GL_ARRAY_BUFFER, (string->array_length*sizeof(float)), string->array, GL_STATIC_DRAW);
 
     }
     void InitProgram(){
 
-        line_frag = ShaderCompile(GL_FRAGMENT_SHADER,"LineFrag",LineFrag);
-        if (0 != line_frag){
+        prog_frag = ShaderCompile(GL_FRAGMENT_SHADER,"LineFrag",LineFrag);
+        if (0 != prog_frag){
 
-            line_vert = ShaderCompile(GL_VERTEX_SHADER,"LineVert",LineVert);
-            if (0 != line_vert){
+            prog_vert = ShaderCompile(GL_VERTEX_SHADER,"LineVert",LineVert);
+            if (0 != prog_vert){
 
-                line = ProgramLink(line_frag,line_vert,"Line");
-                if (0 != line){
+                prog = ProgramLink(prog_frag,prog_vert,"Line");
+                if (0 != prog){
 
-                    line_camera = glGetUniformLocation(line,"u_camera");
-                    line_color = glGetUniformLocation(line,"u_color");
+                    prog_camera = glGetUniformLocation(prog,"u_camera");
+                    prog_color = glGetUniformLocation(prog,"u_color");
                 }
             }
         }

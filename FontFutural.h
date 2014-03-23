@@ -130,6 +130,7 @@ class FontFutural : public Font {
     const static FontGlyph GlyphSet[];
 
     FontFutural();
+    virtual ~FontFutural();
 
     virtual const FontGlyph* get(char) const;
 

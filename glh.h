@@ -24,7 +24,14 @@
 #define _USE_MATH_DEFINES 1
 #include <limits.h>
 #include <math.h>
+
+#ifdef DSNL_NACL
 #include <GLES2/gl2.h>
+#elif DSNL_HOST
+#include <GL/gl.h>
+#else
+#error Require one of DSNL_NACL or DSNL_HOST
+#endif
 
 #include "Fv3Matrix.h"
 

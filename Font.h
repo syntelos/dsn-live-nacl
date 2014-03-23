@@ -20,7 +20,9 @@
 
 #include "Fv3VertexArray.h"
 
-
+/*!
+ * Static glyph 
+ */
 struct FontGlyph {
 
     const float minX;
@@ -35,10 +37,8 @@ struct FontGlyph {
     const unsigned int length;  // length of vertices array (number of floats)
     const float* vertices;
 };
-/*
- * glyph = vector[ch-'!']
- * 
- * space = em
+/*!
+ * Abstract base class for glyph sets.
  */
 class Font {
  public:
@@ -49,10 +49,16 @@ class Font {
     const GLushort mode;
 
     Font(float em, float ascent, float descent, float leading, GLushort mode);
+    virtual ~Font();
 
+    /*!
+     * Returns 0 for glyph unavailable and space character.  The width
+     * of a space is one em.
+     */
     virtual const FontGlyph* get(char) const = 0;
 };
-/*
+/*!
+ * Glyph string
  */
 class FontGlyphVector : public Fv3VertexArray {
 
@@ -73,12 +79,16 @@ class FontGlyphVector : public Fv3VertexArray {
 
     unsigned int count;  // number of 3-vertices
 
-
+    /*
+     */
     FontGlyphVector(const Font&);
     /*!
      * Append characters left to right (X+).
      */
     FontGlyphVector(const Font&,const char*);
+    /*
+     * Subtype of vertex array
+     */
     virtual ~FontGlyphVector();
 
     /*!

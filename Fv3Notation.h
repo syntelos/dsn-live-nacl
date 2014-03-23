@@ -20,7 +20,13 @@
 
 #include <cmath>
 
+#ifdef DSNL_NACL
 #include "ppapi/lib/gl/gles2/gl2ext_ppapi.h"
+#elif DSNL_HOST
+#include <GL/gl.h>
+#else
+#error Require one of DSNL_NACL or DSNL_HOST
+#endif
 
 /*
  * Common Math constants, epsilon for values 0.0 to 10.0.
@@ -75,5 +81,8 @@
 #define G 1
 #define B 2
 #define A 3
-
+/*
+ */
+#define FP_MAX 1e38f
+#define FP_MIN 1e-45f
 #endif

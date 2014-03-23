@@ -26,6 +26,8 @@ Font::Font(float em, float ascent, float descent, float leading, GLushort mode)
     : em(em), ascent(ascent), descent(descent), leading(leading), mode(mode)
 {
 }
+Font::~Font(){
+}
 FontGlyphVector::FontGlyphVector(const Font& font)
     : Fv3VertexArray(font.mode),
       xp(0),
@@ -63,6 +65,11 @@ void FontGlyphVector::append_ltr(const char*string){
                 /*
                  * translate string geometry for space character
                  */
+                float fx = xp+font.em;
+
+                minX = fmin(minX,fx);
+                maxX = fmax(maxX,fx);
+
                 xp += font.em;
             }
             else {
@@ -81,25 +88,30 @@ void FontGlyphVector::append_ltr(const char*string){
                     /*
                      * translate glyph into string geometry
                      */
-                    unsigned int xo;
-                    for (xo = 0; xo < nlen; ){
+                    if (0 != xp){
+                        minX = fmin(minX,xp+glyph->minX);
+                        minY = fmin(minY,glyph->minY);
+                        minZ = fmin(minZ,glyph->minZ);
 
-                        if (0 != xp){
+                        maxX = fmax(maxX,xp+glyph->maxX);
+                        maxY = fmax(maxY,glyph->maxY);
+                        maxZ = fmax(maxZ,glyph->maxZ);
+
+                        unsigned int xo;
+                        for (xo = olen; xo < nlen; xo += 3){
+
                             fp[xo] += xp;
                         }
-                        float x = fp[xo++];
-                        float y = fp[xo++];
-                        float z = fp[xo++];
-
-                        minX = fmin(minX,x);
-                        minY = fmin(minY,y);
-                        minZ = fmin(minZ,z);
-
-                        maxX = fmax(maxX,x);
-                        maxY = fmax(maxY,y);
-                        maxZ = fmax(maxZ,z);
                     }
+                    else {
+                        minX = fmin(minX,glyph->minX);
+                        minY = fmin(minY,glyph->minY);
+                        minZ = fmin(minZ,glyph->minZ);
 
+                        maxX = fmax(maxX,glyph->maxX);
+                        maxY = fmax(maxY,glyph->maxY);
+                        maxZ = fmax(maxZ,glyph->maxZ);
+                    }
                     /*
                      * increment string geometry
                      */
@@ -109,15 +121,14 @@ void FontGlyphVector::append_ltr(const char*string){
                      * update glyph vector state
                      */
                     count = (nlen/3);
-
-                    midX = (minX+maxX)/2.0;
-                    midY = (minY+maxY)/2.0;
-                    midZ = (minZ+maxZ)/2.0;
                 }
                 else {
                     count = 0;
                 }
             }
+            midX = (minX+maxX)/2.0;
+            midY = (minY+maxY)/2.0;
+            midZ = (minZ+maxZ)/2.0;
         }
     }
 }

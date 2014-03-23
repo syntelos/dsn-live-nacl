@@ -17,11 +17,14 @@
  */
 
 const char* LineVert = 
-    "attribute vec4 a_position;\n"
-    "attribute vec4 a_normal;\n"
+    "#version 100\n"
+    "precision mediump float;\n"
     "\n"
     "uniform mat4 u_camera;\n"
     "uniform vec4 u_color;\n"
+    "\n"
+    "attribute vec4 a_position;\n"
+    "attribute vec4 a_normal;\n"
     "\n"
     "void main(){\n"
     "\n"
@@ -30,8 +33,8 @@ const char* LineVert =
 ;
 
 const char* LineFrag = 
-    "attribute vec4 a_position;\n"
-    "attribute vec4 a_normal;\n"
+    "#version 100\n"
+    "precision mediump float;\n"
     "\n"
     "uniform mat4 u_camera;\n"
     "uniform vec4 u_color;\n"
