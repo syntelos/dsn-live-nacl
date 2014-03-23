@@ -39,7 +39,7 @@
 #include "Shaders.h"
 
 /*!
- * 
+ * There's only one instance of DSNL per module.
  */
 class DSNLInstance : public pp::Instance {
 
@@ -51,18 +51,25 @@ class DSNLInstance : public pp::Instance {
     GLuint prog_vert;
     GLuint prog_frag;
     GLuint prog;
-    GLuint prog_position;
-    GLuint prog_color;
-    GLuint prog_camera;
+    int prog_position;
+    int prog_color;
+    int prog_camera;
+
+    bool running;
 
     FontGlyphVector *string;
-
 
 public:
 
     explicit DSNLInstance(PP_Instance instance)
         : pp::Instance(instance),
-          callback_factory(this)
+          callback_factory(this), context(),
+          width(0),
+          height(0),
+          prog_vert(0), prog_frag(0), prog(0),
+          prog_position(0), prog_color(0), prog_camera(0),
+          running(true),
+          string(0)
     {
         std::cerr << "DSNL: DSNL()" << std::endl;
     }
@@ -190,23 +197,65 @@ private:
 
         glUniform4fv(prog_color,1,Fv3Color::White.array);
 
-        std::cerr << "DSNL: Render() <bind 'string'>" << std::endl;
+        if (erck("Uniform")){
+            return;
+        }
 
         glBindBuffer(GL_ARRAY_BUFFER, string->vertex_buffer);
 
-        std::cerr << "DSNL: Render() <position 'string'>" << std::endl;
+        if (erck("BindBuffer")){
+            return;
+        }
 
         glVertexAttribPointer(prog_position, 3, GL_FLOAT, GL_FALSE, 0, 0);
 
-        std::cerr << "DSNL: Render() <enable position 'string'>" << std::endl;
+        if (erck("VertexAttribPointer")){
+
+            fprintf(stderr,"DSNL VertexAttribPointer index: 0x%08x\n", prog_position);
+            return;
+        }
 
         glEnableVertexAttribArray(prog_position);
 
-        std::cerr << "DSNL: Render() <draw elements 'string'>" << std::endl;
+        if (erck("VertexAttribArray")){
+            return;
+        }
 
         glDrawElements(GL_LINES, string->elements, GL_FLOAT, 0);
 
-        std::cerr << "DSNL: Render() <end>" << std::endl;
+        if (erck("DrawElements")){
+            return;
+        }
+    }
+    bool erck(const char* fn){
+        switch(glGetError()){
+        case GL_INVALID_ENUM:
+            std::cerr << "DSNL Error: " << fn << ": INVALID_ENUM" << std::endl;
+            running = false;
+            return true;
+        case GL_INVALID_VALUE:
+            std::cerr << "DSNL Error: " << fn << ": INVALID_VALUE" << std::endl;
+            running = false;
+            return true;
+        case GL_INVALID_OPERATION:
+            std::cerr << "DSNL Error: " << fn << ": INVALID_OPERATION" << std::endl;
+            running = false;
+            return true;
+        case GL_INVALID_FRAMEBUFFER_OPERATION:
+            std::cerr << "DSNL Error: " << fn << ": INVALID_FRAMEBUFFER_OPERATION" << std::endl;
+            running = false;
+            return true;
+        case GL_OUT_OF_MEMORY:
+            std::cerr << "DSNL Error: " << fn << ": OUT_OF_MEMORY" << std::endl;
+            running = false;
+            return true;
+        case GL_CONTEXT_LOST:
+            std::cerr << "DSNL Error: " << fn << ": CONTEXT_LOST" << std::endl;
+            running = false;
+            return true;
+        default:
+            return false;
+        }
     }
     void InitBuffers(){
 
@@ -220,7 +269,7 @@ private:
 
         glBindBuffer(GL_ARRAY_BUFFER, string->vertex_buffer);
 
-        glBufferData(GL_ARRAY_BUFFER, (string->array_length*sizeof(float)), string->array, GL_STATIC_DRAW);
+        glBufferData(GL_ARRAY_BUFFER, (string->array_length*sizeof(float)), &(string->array), GL_STATIC_DRAW);
 
     }
     void InitProgram(){
@@ -236,8 +285,16 @@ private:
                 if (0 != prog){
 
                     prog_position = glGetUniformLocation(prog,"a_position");
+
+                    fprintf(stderr,"DSNL: InitProgram( 'a_position': %d)\n",prog_position);
+
                     prog_camera = glGetUniformLocation(prog,"u_camera");
+
+                    fprintf(stderr,"DSNL: InitProgram( 'u_camera': %d)\n",prog_camera);
+
                     prog_color = glGetUniformLocation(prog,"u_color");
+
+                    fprintf(stderr,"DSNL: InitProgram( 'u_camera': %d)\n",prog_color);
                 }
             }
         }
@@ -246,7 +303,10 @@ private:
 
         Render();
 
-        context.SwapBuffers(callback_factory.NewCallback(&DSNLInstance::MainLoop));
+        if (running){
+
+            context.SwapBuffers(callback_factory.NewCallback(&DSNLInstance::MainLoop));
+        }
     }
     static GLuint ShaderCompile(GLenum type, const char* name, const char* text){
         GLuint shader = glCreateShader(type);
