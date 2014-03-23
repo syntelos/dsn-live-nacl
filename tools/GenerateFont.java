@@ -34,6 +34,60 @@ public class GenerateFont {
         }
         return string.toString();
     }
+    public final static float Fix(HersheyFont font){
+
+        final int count = font.getLength();
+        /*
+         * Translate glyphs to origin
+         */
+        for (int cc = 0; cc < count; cc++){
+
+            HersheyGlyph glyph = font.get(cc);
+
+            float[] vertices = glyph.array();
+
+            final int nv3 = vertices.length;
+
+            if (0 < nv3){
+                /*
+                 * Translate glyph origin to (0,0)~
+                 */
+                float minX = Float.MAX_VALUE;
+
+                for (int x = 0; (x+2) < nv3; x+=3){
+
+                    minX = Math.min(minX,vertices[x]);
+                }
+
+                if (0.0 < minX){
+
+                    for (int x = 0; (x+2) < nv3; x+=3){
+
+                        vertices[x] -= minX;
+                    }
+                }
+            }
+        }
+        /*
+         * Return 'em'
+         */
+        HersheyGlyph glyph = font.get('e');
+
+        float[] vertices = glyph.array();
+
+        final int nv3 = vertices.length;
+
+        /*
+         * Measure glyph width
+         */
+        float maxX = Float.MIN_VALUE;
+
+        for (int x = 0; (x+2) < nv3; x+=3){
+
+            maxX = Math.max(maxX,vertices[x]);
+        }
+        return maxX;
+    }
     public final static void main(String[] argv){
         if (3 == argv.length){
             final String fn = argv[0];
@@ -43,6 +97,9 @@ public class GenerateFont {
             final File tgt_c = new File(argv[2]);
             try {
                 HersheyFont font = new HersheyFont(fn);
+                
+                final float EM = Fix(font);
+
                 final int count = font.getLength();
                 final int term = (count-1);
                 PrintStream out;
@@ -73,7 +130,7 @@ public class GenerateFont {
                     out.println();
                     out.println("#include \"Font.h\"");
                     out.println();
-                    out.printf ("#define %s_EM %f%n",cn,font.getEm());
+                    out.printf ("#define %s_EM %f%n",cn,EM);
                     out.printf ("#define %s_ASCENT %f%n",cn,font.getAscent());
                     out.printf ("#define %s_DESCENT %f%n",cn,font.getDescent());
                     out.printf ("#define %s_LEADING %f%n",cn,font.getLeading());
@@ -151,23 +208,6 @@ public class GenerateFont {
                         final int nv3 = vertices.length;
 
                         if (0 < nv3){
-                            /*
-                             * Translate glyph origin to (0,0)~
-                             */
-                            float minX = Float.MAX_VALUE;
-
-                            for (int x = 0; (x+2) < nv3; x+=3){
-
-                                minX = Math.min(minX,vertices[x]);
-                            }
-
-                            if (0.0 < minX){
-
-                                for (int x = 0; (x+2) < nv3; x+=3){
-
-                                    vertices[x] -= minX;
-                                }
-                            }
                             /*
                              * Emit vertices
                              */

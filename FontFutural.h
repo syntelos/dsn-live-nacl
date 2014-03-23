@@ -20,7 +20,7 @@
 
 #include "Font.h"
 
-#define FontFutural_EM 17.600000
+#define FontFutural_EM 12.000000
 #define FontFutural_ASCENT 22.400000
 #define FontFutural_DESCENT 9.600000
 #define FontFutural_LEADING 3.200000
