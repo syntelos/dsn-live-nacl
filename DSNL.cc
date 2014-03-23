@@ -226,11 +226,11 @@ private:
 
         glEnableVertexAttribArray(prog_position);
 
-        glDrawArrays(GL_LINES, 0, 3);
+        glDrawArrays(GL_LINES, 0, string->elements);
 
-        //if (erck("Render")){
+        if (erck("Render")){
             error = new FailureBug("Render","Some unknown rendering bug");
-        //}
+        }
     }
     bool erck(const char* fn){
         switch(glGetError()){
@@ -260,16 +260,15 @@ private:
 
         FontFutural font;
 
-        string = new FontGlyphVector(font,"string");
+        string = new FontGlyphVector(font,"Status: in development");
 
-        string->scale(1.0/100.0);
+        string->center();
 
         glGenBuffers(1,&(string->vertex_buffer));
 
         glBindBuffer(GL_ARRAY_BUFFER, string->vertex_buffer);
 
         glBufferData(GL_ARRAY_BUFFER, (string->array_length*sizeof(float)), &(string->array[0]), GL_STATIC_DRAW);
-
     }
     void InitProgram(){
 

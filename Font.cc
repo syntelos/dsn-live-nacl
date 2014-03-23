@@ -51,12 +51,15 @@ void FontGlyphVector::append_ltr(const char*string){
          * build vertex array for string
          */
         unsigned int cc;
+        char ch;
+
         for (cc = 0; cc < string_len; cc++){
 
-            char ch = string[cc];
+            ch = string[cc];
 
             const FontGlyph* glyph = font.get(ch);
-            if (0 == glyph){
+
+            if (0 == glyph || 0 == glyph->length){
                 /*
                  * translate string geometry for space character
                  */
@@ -78,12 +81,11 @@ void FontGlyphVector::append_ltr(const char*string){
                 append(glyph->length,glyph->vertices);
 
                 if (array){
-
-                    float* fp = &(array[olen]);
                     /*
                      * translate glyph into string geometry
                      */
                     if (0 != xp){
+
                         minX = fmin(minX,xp+glyph->minX);
                         minY = fmin(minY,glyph->minY);
                         minZ = fmin(minZ,glyph->minZ);
@@ -95,7 +97,7 @@ void FontGlyphVector::append_ltr(const char*string){
                         unsigned int xo;
                         for (xo = olen; xo < nlen; xo += 3){
 
-                            fp[xo] += xp;
+                            array[xo] += xp;
                         }
                     }
                     else {
@@ -110,7 +112,7 @@ void FontGlyphVector::append_ltr(const char*string){
                     /*
                      * increment string geometry
                      */
-                    xp += glyph->maxX;
+                    xp += (glyph->maxX + font.leading);
                     /*
                      * update vertex array
                      */

@@ -100,9 +100,9 @@ class Fv3VertexArray : public Fv3 {
      */
     virtual void copy(const float*);
 
-    void append(const Fv3VertexArray&);
+    Fv3VertexArray& append(const Fv3VertexArray&);
 
-    void append(const unsigned int, const float*);
+    Fv3VertexArray& append(const unsigned int, const float*);
     /*!
      * Bounds values are not default.
      */
@@ -115,16 +115,24 @@ class Fv3VertexArray : public Fv3 {
      * Scan array as a list of vertices in three coordinates (x, y, z)
      * to update bounds.
      */
-    void bounds();
+    Fv3VertexArray& bounds();
     /*!
      * Use bounds to scale the vertex set to fit within the dimensions
      * described by the arguments, maintaining aspect ratios.
      */
-    void fitTo(float x, float y, float z);
+    Fv3VertexArray& fitTo(float x, float y, float z);
     /*!
      * Scale and update bounds.
      */
-    void scale(float s);
+    Fv3VertexArray& scale(float s);
+    /*!
+     * Translate and update bounds.
+     */
+    Fv3VertexArray& translate(float dx, float dy, float dz);
+    /*!
+     * Center using bounds.
+     */
+    Fv3VertexArray& center();
 
 };
 #endif

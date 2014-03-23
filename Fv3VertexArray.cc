@@ -120,7 +120,7 @@ void Fv3VertexArray::copy(const float* copy){
         std::memcpy(array,copy,msz);
     }
 }
-void Fv3VertexArray::append(const Fv3VertexArray& src){
+Fv3VertexArray& Fv3VertexArray::append(const Fv3VertexArray& src){
 
     append(src.array_length,src.array);
 
@@ -138,8 +138,9 @@ void Fv3VertexArray::append(const Fv3VertexArray& src){
         midY = (minY+maxY)/2.0;
         midZ = (minZ+maxZ)/2.0;
     }
+    return *this;
 }
-void Fv3VertexArray::append(const unsigned int src_array_length, const float* src_array){
+Fv3VertexArray& Fv3VertexArray::append(const unsigned int src_array_length, const float* src_array){
 
     const unsigned int olen = array_length;
     const unsigned int nlen = (olen + src_array_length);
@@ -161,6 +162,7 @@ void Fv3VertexArray::append(const unsigned int src_array_length, const float* sr
     else {
         array_length = 0;
     }
+    return *this;
 }
 bool Fv3VertexArray::hasBounds() const {
     return (FP_MAX != minX && ZERO != midX && FP_MIN != maxX);
@@ -168,7 +170,7 @@ bool Fv3VertexArray::hasBounds() const {
 bool Fv3VertexArray::hasNotBounds() const {
     return (FP_MAX == minX && ZERO == midX && FP_MIN == maxX);
 }
-void Fv3VertexArray::bounds(){
+Fv3VertexArray& Fv3VertexArray::bounds(){
     if (0 != array && 0 < array_length){
         minX = FP_MAX;
         minY = FP_MAX;
@@ -196,8 +198,9 @@ void Fv3VertexArray::bounds(){
         midY = (minY+maxY)/2.0;
         midZ = (minZ+maxZ)/2.0;
     }
+    return *this;
 }
-void Fv3VertexArray::fitTo(float x, float y, float z){
+Fv3VertexArray& Fv3VertexArray::fitTo(float x, float y, float z){
 
     if (hasBounds()){
 
@@ -223,8 +226,9 @@ void Fv3VertexArray::fitTo(float x, float y, float z){
 
         scale(s);
     }
+    return *this;
 }
-void Fv3VertexArray::scale(float s){
+Fv3VertexArray& Fv3VertexArray::scale(float s){
 
     s = static_cast<float>(s);
 
@@ -266,4 +270,87 @@ void Fv3VertexArray::scale(float s){
         midY = (minY+maxY)/2.0;
         midZ = (minZ+maxZ)/2.0;
     }
+    return *this;
+}
+Fv3VertexArray& Fv3VertexArray::translate(float dx, float dy, float dz){
+
+    minX = FP_MAX;
+    minY = FP_MAX;
+    minZ = FP_MAX;
+
+    maxX = FP_MIN;
+    maxY = FP_MIN;
+    maxZ = FP_MIN;
+
+    unsigned int cc, ix, iy, iz;
+
+    for (cc = 0; cc < array_length; cc += 3){
+
+        ix = (cc+X);
+        iy = (cc+Y);
+        iz = (cc+Z);
+
+        float x = (array[ix] + dx);
+        float y = (array[iy] + dy);
+        float z = (array[iz] + dz);
+
+        array[ix] = x;
+        array[iy] = y;
+        array[iz] = z;
+
+        minX = fmin(minX,x);
+        minY = fmin(minY,y);
+        minZ = fmin(minZ,z);
+
+        maxX = fmax(maxX,x);
+        maxY = fmax(maxY,y);
+        maxZ = fmax(maxZ,z);
+    }
+    midX = (minX+maxX)/2.0;
+    midY = (minY+maxY)/2.0;
+    midZ = (minZ+maxZ)/2.0;
+
+    return *this;
+}
+Fv3VertexArray& Fv3VertexArray::center(){
+    if (hasBounds()){
+        if (IS_NOT_ZERO(midX)){
+
+            if (IS_NOT_ZERO(midY)){
+
+                if (IS_NOT_ZERO(midZ)){
+
+                    translate( -midX, -midY, -midZ);
+                }
+                else {
+
+                    translate( -midX, -midY, 0.0);
+                }
+            }
+            else if (IS_NOT_ZERO(midZ)){
+
+                translate( -midX, 0.0, -midZ);
+            }
+            else {
+
+                translate( -midX, 0.0, 0.0);
+            }
+        }
+        else if (IS_NOT_ZERO(midY)){
+
+            if (IS_NOT_ZERO(midZ)){
+
+                translate( 0.0, -midY, -midZ);
+            }
+            else {
+
+                translate( 0.0, -midY, 0.0);
+            }
+        }
+        else if (IS_NOT_ZERO(midZ)){
+
+            translate( 0.0, 0.0, -midZ);
+        }
+    }
+    return *this;
 }

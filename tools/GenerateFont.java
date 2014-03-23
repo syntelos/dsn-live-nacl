@@ -90,11 +90,11 @@ public class GenerateFont {
 
                         final float[] vertices = glyph.array();
 
-                        final int nv3 = (vertices.length/2)*3;
+                        final int nv3 = vertices.length;
 
                         if (0 < nv3){
 
-                            out.printf ("    const static float GlyphVertices_%d[%d];%n",cc,nv3);
+                            out.printf ("    const static float GlyphVertices_%d[%d]; // '%c'%n",cc,nv3,(char)(cc+' '));
                         }
                     }
                     out.println();
@@ -146,17 +146,36 @@ public class GenerateFont {
 
                         HersheyGlyph glyph = font.get(cc);
 
-                        final float[] vertices = glyph.array();
+                        float[] vertices = glyph.array();
 
-                        final int nv3 = (vertices.length/2)*3;
+                        final int nv3 = vertices.length;
 
                         if (0 < nv3){
+                            /*
+                             * Translate glyph origin to (0,0)~
+                             */
+                            float minX = Float.MAX_VALUE;
 
-                            out.printf ("const float %s::GlyphVertices_%d[%d] = {%n",cn,cc,nv3);
+                            for (int x = 0; (x+2) < nv3; x+=3){
 
-                            for (int x = 0, y = 1; y < vertices.length; x+=2,y+=2){
+                                minX = Math.min(minX,vertices[x]);
+                            }
 
-                                out.printf ("    %f, %f, %f, %n",vertices[x],vertices[y],0f);
+                            if (0.0 < minX){
+
+                                for (int x = 0; (x+2) < nv3; x+=3){
+
+                                    vertices[x] -= minX;
+                                }
+                            }
+                            /*
+                             * Emit vertices
+                             */
+                            out.printf ("const float %s::GlyphVertices_%d[%d] = { // '%c'%n",cn,cc,nv3,(char)(cc+' '));
+
+                            for (int x = 0, y = 1, z = 2; z < nv3; x+=3,y+=3,z+=3){
+
+                                out.printf ("    %f, %f, %f, %n",vertices[x],vertices[y],vertices[z]);
                             }
 
                             out.printf ("};%n");
@@ -175,45 +194,55 @@ public class GenerateFont {
 
                         final float[] vertices = glyph.array();
 
-                        final int nv3 = (vertices.length/2)*3;
+                        final int nv3 = vertices.length;
 
                         float minX = Float.MAX_VALUE;
                         float maxX = Float.MIN_VALUE;
                         float minY = Float.MAX_VALUE;
                         float maxY = Float.MIN_VALUE;
 
+                        float minZ = Float.MAX_VALUE;
+                        float maxZ = Float.MIN_VALUE;
+
                         if (0 == nv3){
                             minX = 0f;
                             maxX = font.getEm();
                             minY = 0f;
                             maxY = 0f;
+                            minZ = 0f;
+                            maxZ = 0f;
                         }
                         else {
-                            for (int x = 0, y = 1; y < vertices.length; x+=2,y+=2){
+                            for (int x = 0, y = 1, z = 2; z < nv3; x+=3,y+=3,z+=3){
 
                                 float fx = vertices[x];
                                 float fy = vertices[y];
+                                float fz = vertices[z];
 
                                 minX = Math.min(minX,fx);
                                 maxX = Math.max(maxX,fx);
 
                                 minY = Math.min(minY,fy);
                                 maxY = Math.max(maxY,fy);
+
+                                minZ = Math.min(minZ,fz);
+                                maxZ = Math.max(maxZ,fz);
                             }
                         }
 
                         float midX = (minX + maxX)/2f;
                         float midY = (minY + maxY)/2f;
+                        float midZ = (minZ + maxZ)/2f;
 
                         out.printf ("    {%n");
                         out.printf ("        %f, %f, %f, %n",minX,midX,maxX);
                         out.printf ("        %f, %f, %f, %n",minY,midY,maxY);
-                        out.printf ("        %f, %f, %f, %n",0f,0f,0f);
+                        out.printf ("        %f, %f, %f, %n",minZ,midZ,maxZ);
                         out.printf ("        %d,%n",nv3);
 
                         if (0 < nv3){
 
-                            out.printf ("        GlyphVertices_%d%n",cc);
+                            out.printf ("        GlyphVertices_%d  // '%c'%n",cc,(char)(cc+' '));
                         }
                         else {
                             out.printf ("        0%n");

@@ -56,6 +56,7 @@ class Font {
      * of a space is one em.
      */
     virtual const FontGlyph* get(char) const = 0;
+
 };
 /*!
  * Glyph string

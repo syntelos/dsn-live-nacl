@@ -41,9 +41,6 @@ int main(int argc, char** argv){
 
     std::printf("string len_fv3: %d, minX: %f, midX: %f, maxX: %f\n",string->array_length,string->minX, string->midX, string->maxX);
 
-    string->scale(1.0/100.0);
-
-    std::printf("string scale(0.01) len_fv3: %d, minX: %f, midX: %f, maxX: %f\n",string->array_length,string->minX, string->midX, string->maxX);
 
     std::cout << "{" << std::endl;
 

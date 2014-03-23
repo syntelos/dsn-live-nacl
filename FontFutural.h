@@ -31,101 +31,101 @@
 class FontFutural : public Font {
  public:
 
-    const static float GlyphVertices_1[45];
-    const static float GlyphVertices_2[18];
-    const static float GlyphVertices_3[36];
-    const static float GlyphVertices_4[189];
-    const static float GlyphVertices_5[234];
-    const static float GlyphVertices_6[297];
-    const static float GlyphVertices_7[54];
-    const static float GlyphVertices_8[81];
-    const static float GlyphVertices_9[81];
-    const static float GlyphVertices_10[27];
-    const static float GlyphVertices_11[18];
-    const static float GlyphVertices_12[54];
-    const static float GlyphVertices_13[9];
-    const static float GlyphVertices_14[36];
-    const static float GlyphVertices_15[9];
-    const static float GlyphVertices_16[144];
-    const static float GlyphVertices_17[27];
-    const static float GlyphVertices_18[117];
-    const static float GlyphVertices_19[126];
-    const static float GlyphVertices_20[27];
-    const static float GlyphVertices_21[144];
-    const static float GlyphVertices_22[198];
-    const static float GlyphVertices_23[18];
-    const static float GlyphVertices_24[252];
-    const static float GlyphVertices_25[198];
-    const static float GlyphVertices_26[72];
-    const static float GlyphVertices_27[90];
-    const static float GlyphVertices_28[18];
-    const static float GlyphVertices_29[18];
-    const static float GlyphVertices_30[18];
-    const static float GlyphVertices_31[153];
-    const static float GlyphVertices_32[432];
-    const static float GlyphVertices_33[27];
-    const static float GlyphVertices_34[162];
-    const static float GlyphVertices_35[153];
-    const static float GlyphVertices_36[108];
-    const static float GlyphVertices_37[36];
-    const static float GlyphVertices_38[27];
-    const static float GlyphVertices_39[171];
-    const static float GlyphVertices_40[27];
-    const static float GlyphVertices_41[9];
-    const static float GlyphVertices_42[81];
-    const static float GlyphVertices_43[27];
-    const static float GlyphVertices_44[18];
-    const static float GlyphVertices_45[36];
-    const static float GlyphVertices_46[27];
-    const static float GlyphVertices_47[180];
-    const static float GlyphVertices_48[90];
-    const static float GlyphVertices_49[189];
-    const static float GlyphVertices_50[99];
-    const static float GlyphVertices_51[171];
-    const static float GlyphVertices_52[18];
-    const static float GlyphVertices_53[81];
-    const static float GlyphVertices_54[18];
-    const static float GlyphVertices_55[36];
-    const static float GlyphVertices_56[18];
-    const static float GlyphVertices_57[27];
-    const static float GlyphVertices_58[27];
-    const static float GlyphVertices_59[36];
-    const static float GlyphVertices_60[9];
-    const static float GlyphVertices_61[36];
-    const static float GlyphVertices_62[18];
-    const static float GlyphVertices_63[9];
-    const static float GlyphVertices_64[54];
-    const static float GlyphVertices_65[126];
-    const static float GlyphVertices_66[126];
-    const static float GlyphVertices_67[117];
-    const static float GlyphVertices_68[126];
-    const static float GlyphVertices_69[144];
-    const static float GlyphVertices_70[45];
-    const static float GlyphVertices_71[171];
-    const static float GlyphVertices_72[63];
-    const static float GlyphVertices_73[45];
-    const static float GlyphVertices_74[72];
-    const static float GlyphVertices_75[27];
-    const static float GlyphVertices_76[9];
-    const static float GlyphVertices_77[117];
-    const static float GlyphVertices_78[63];
-    const static float GlyphVertices_79[144];
-    const static float GlyphVertices_80[126];
-    const static float GlyphVertices_81[126];
-    const static float GlyphVertices_82[45];
-    const static float GlyphVertices_83[144];
-    const static float GlyphVertices_84[45];
-    const static float GlyphVertices_85[63];
-    const static float GlyphVertices_86[18];
-    const static float GlyphVertices_87[36];
-    const static float GlyphVertices_88[18];
-    const static float GlyphVertices_89[54];
-    const static float GlyphVertices_90[27];
-    const static float GlyphVertices_91[306];
-    const static float GlyphVertices_92[9];
-    const static float GlyphVertices_93[306];
-    const static float GlyphVertices_94[180];
-    const static float GlyphVertices_95[297];
+    const static float GlyphVertices_1[30]; // '!'
+    const static float GlyphVertices_2[12]; // '"'
+    const static float GlyphVertices_3[24]; // '#'
+    const static float GlyphVertices_4[126]; // '$'
+    const static float GlyphVertices_5[156]; // '%'
+    const static float GlyphVertices_6[198]; // '&'
+    const static float GlyphVertices_7[36]; // '''
+    const static float GlyphVertices_8[54]; // '('
+    const static float GlyphVertices_9[54]; // ')'
+    const static float GlyphVertices_10[18]; // '*'
+    const static float GlyphVertices_11[12]; // '+'
+    const static float GlyphVertices_12[36]; // ','
+    const static float GlyphVertices_13[6]; // '-'
+    const static float GlyphVertices_14[24]; // '.'
+    const static float GlyphVertices_15[6]; // '/'
+    const static float GlyphVertices_16[96]; // '0'
+    const static float GlyphVertices_17[18]; // '1'
+    const static float GlyphVertices_18[78]; // '2'
+    const static float GlyphVertices_19[84]; // '3'
+    const static float GlyphVertices_20[18]; // '4'
+    const static float GlyphVertices_21[96]; // '5'
+    const static float GlyphVertices_22[132]; // '6'
+    const static float GlyphVertices_23[12]; // '7'
+    const static float GlyphVertices_24[168]; // '8'
+    const static float GlyphVertices_25[132]; // '9'
+    const static float GlyphVertices_26[48]; // ':'
+    const static float GlyphVertices_27[60]; // ';'
+    const static float GlyphVertices_28[12]; // '<'
+    const static float GlyphVertices_29[12]; // '='
+    const static float GlyphVertices_30[12]; // '>'
+    const static float GlyphVertices_31[102]; // '?'
+    const static float GlyphVertices_32[288]; // '@'
+    const static float GlyphVertices_33[18]; // 'A'
+    const static float GlyphVertices_34[108]; // 'B'
+    const static float GlyphVertices_35[102]; // 'C'
+    const static float GlyphVertices_36[72]; // 'D'
+    const static float GlyphVertices_37[24]; // 'E'
+    const static float GlyphVertices_38[18]; // 'F'
+    const static float GlyphVertices_39[114]; // 'G'
+    const static float GlyphVertices_40[18]; // 'H'
+    const static float GlyphVertices_41[6]; // 'I'
+    const static float GlyphVertices_42[54]; // 'J'
+    const static float GlyphVertices_43[18]; // 'K'
+    const static float GlyphVertices_44[12]; // 'L'
+    const static float GlyphVertices_45[24]; // 'M'
+    const static float GlyphVertices_46[18]; // 'N'
+    const static float GlyphVertices_47[120]; // 'O'
+    const static float GlyphVertices_48[60]; // 'P'
+    const static float GlyphVertices_49[126]; // 'Q'
+    const static float GlyphVertices_50[66]; // 'R'
+    const static float GlyphVertices_51[114]; // 'S'
+    const static float GlyphVertices_52[12]; // 'T'
+    const static float GlyphVertices_53[54]; // 'U'
+    const static float GlyphVertices_54[12]; // 'V'
+    const static float GlyphVertices_55[24]; // 'W'
+    const static float GlyphVertices_56[12]; // 'X'
+    const static float GlyphVertices_57[18]; // 'Y'
+    const static float GlyphVertices_58[18]; // 'Z'
+    const static float GlyphVertices_59[24]; // '['
+    const static float GlyphVertices_60[6]; // '\'
+    const static float GlyphVertices_61[24]; // ']'
+    const static float GlyphVertices_62[12]; // '^'
+    const static float GlyphVertices_63[6]; // '_'
+    const static float GlyphVertices_64[36]; // '`'
+    const static float GlyphVertices_65[84]; // 'a'
+    const static float GlyphVertices_66[84]; // 'b'
+    const static float GlyphVertices_67[78]; // 'c'
+    const static float GlyphVertices_68[84]; // 'd'
+    const static float GlyphVertices_69[96]; // 'e'
+    const static float GlyphVertices_70[30]; // 'f'
+    const static float GlyphVertices_71[114]; // 'g'
+    const static float GlyphVertices_72[42]; // 'h'
+    const static float GlyphVertices_73[30]; // 'i'
+    const static float GlyphVertices_74[48]; // 'j'
+    const static float GlyphVertices_75[18]; // 'k'
+    const static float GlyphVertices_76[6]; // 'l'
+    const static float GlyphVertices_77[78]; // 'm'
+    const static float GlyphVertices_78[42]; // 'n'
+    const static float GlyphVertices_79[96]; // 'o'
+    const static float GlyphVertices_80[84]; // 'p'
+    const static float GlyphVertices_81[84]; // 'q'
+    const static float GlyphVertices_82[30]; // 'r'
+    const static float GlyphVertices_83[96]; // 's'
+    const static float GlyphVertices_84[30]; // 't'
+    const static float GlyphVertices_85[42]; // 'u'
+    const static float GlyphVertices_86[12]; // 'v'
+    const static float GlyphVertices_87[24]; // 'w'
+    const static float GlyphVertices_88[12]; // 'x'
+    const static float GlyphVertices_89[36]; // 'y'
+    const static float GlyphVertices_90[18]; // 'z'
+    const static float GlyphVertices_91[204]; // '{'
+    const static float GlyphVertices_92[6]; // '|'
+    const static float GlyphVertices_93[204]; // '}'
+    const static float GlyphVertices_94[120]; // '~'
+    const static float GlyphVertices_95[198]; // ''
 
     const static FontGlyph GlyphSet[];
 
