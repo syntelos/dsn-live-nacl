@@ -4,11 +4,14 @@
     <title>w.syntelos.net/dsn-live-nacl</title>
     <link rel="icon" type="image/x-icon" href="/favicon.ico" />
     <link rel="stylesheet" type="text/css" href="etc/dsnl.css" />
+    <link rel="publisher" href="http://plus.google.com/+JohnPritchardSyntelos" />
+    <link rel="author" href="mailto:jdp@syntelos.com" />
+    <link rel="license" href="http://creativecommons.org/licenses/by/3.0/" />
     <script type="text/javascript" src="etc/spin.js"></script>
     <script type="text/javascript" src="etc/nacl.js"></script>
     <script type="text/javascript" src="etc/dsnl.js"></script>
   </head>
-  <body onload="dsnlInit()">
+  <body onload="dsnl.init()">
     <div class="main secondary" id="loading">
     </div>
     <div class="main secondary" id="unavailable">
@@ -29,10 +32,10 @@
 
         var listener = document.getElementById("nacl");
 
-        listener.addEventListener("load", dsnlLoad, true);
-        listener.addEventListener("message", dsnlMessage, true);
-        listener.addEventListener("crash", dsnlCrash, true);
-        listener.addEventListener("error", dsnlError, true);
+        listener.addEventListener("load", dsnl.load, true);
+        listener.addEventListener("message", dsnl.message, true);
+        listener.addEventListener("crash", dsnl.crash, true);
+        listener.addEventListener("error", dsnl.error, true);
       </script>
 
       <embed id="nacl_module" width="100%" height="98%" src="dsn-live-nacl.nmf" type="application/x-pnacl" />

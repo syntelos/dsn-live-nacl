@@ -182,7 +182,6 @@ private:
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glEnable(GL_DEPTH_TEST);
 
-
         glUseProgram(prog);
 
 
@@ -197,29 +196,28 @@ private:
 
         glUniform4fv(prog_color,1,Fv3Color::White.array);
 
-        if (erck("Uniform")){
-            return;
-        }
 
         glBindBuffer(GL_ARRAY_BUFFER, string->vertex_buffer);
 
-        if (erck("BindBuffer")){
-            return;
-        }
 
         glVertexAttribPointer(prog_position, 3, GL_FLOAT, GL_FALSE, 0, 0);
 
         if (erck("VertexAttribPointer")){
-
-            fprintf(stderr,"DSNL VertexAttribPointer index: 0x%08x\n", prog_position);
             return;
         }
 
         glEnableVertexAttribArray(prog_position);
 
-        if (erck("VertexAttribArray")){
+        if (erck("EnableVertexAttribArray")){
             return;
         }
+
+        glVertexAttribPointer(prog_color, 4, GL_FLOAT, GL_FALSE, 0, 0);
+
+        glEnableVertexAttribArray(prog_color);
+
+
+        std::cerr << "Render: DrawElements" << std::endl;
 
         glDrawElements(GL_LINES, string->elements, GL_FLOAT, 0);
 
@@ -285,16 +283,8 @@ private:
                 if (0 != prog){
 
                     prog_position = glGetUniformLocation(prog,"a_position");
-
-                    fprintf(stderr,"DSNL: InitProgram( 'a_position': %d)\n",prog_position);
-
                     prog_camera = glGetUniformLocation(prog,"u_camera");
-
-                    fprintf(stderr,"DSNL: InitProgram( 'u_camera': %d)\n",prog_camera);
-
                     prog_color = glGetUniformLocation(prog,"u_color");
-
-                    fprintf(stderr,"DSNL: InitProgram( 'u_camera': %d)\n",prog_color);
                 }
             }
         }
