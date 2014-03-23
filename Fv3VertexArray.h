@@ -116,6 +116,15 @@ class Fv3VertexArray : public Fv3 {
      * to update bounds.
      */
     void bounds();
+    /*!
+     * Use bounds to scale the vertex set to fit within the dimensions
+     * described by the arguments, maintaining aspect ratios.
+     */
+    void fitTo(float x, float y, float z);
+    /*!
+     * Scale and update bounds.
+     */
+    void scale(float s);
 
 };
 #endif

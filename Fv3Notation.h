@@ -29,14 +29,42 @@
 #endif
 
 /*
- * Common Math constants, epsilon for values 0.0 to 10.0.
+ * Common Math constants, epsilon for values 0.0 to 10.0 (single
+ * precision fp)
  */
-#define EPSILON (1e-7f)
-#define EPS EPSILON
-#define EPS_M2 (EPSILON*2.0f)
-#define EPS_D2 (EPSILON/2.0f)
+#define EPS (1e-7f)
+#define EPS_M2 (EPS*2.0f)
+#define EPS_D2 (EPS/2.0f)
 #define EPS_1D2 (1.0f - EPS_D2)
+/*
+ * Is A Number Test(value){
+ * 
+ *     float tmp = static_cast<float>(value); // fp normalize
+ * 
+ *     (tmp == tmp)?(is a number):(not a number)
+ * }
+ */
+/*
+ * Epsilon for an arbitrary value 
+ */
+#define EPSILON(v) (EPS * std::fmax(1.0f,std::fabs(v)))
+/*
+ * Epsilon tests
+ */
+#define IS_NOT_ZERO(f) (EPS < std::fabs(f))
 
+#define IS_ZERO(f) (EPS > std::fabs(f))
+
+#define IS_NOT_ONE(f) (EPS < std::fabs(1.0f - f))
+
+#define IS_ONE(f) (EPS > std::fabs(1.0f - f))
+
+#define EPS_NE(a,b) (EPSILON(a,b) < std::fabs(a - b))
+
+#define EPS_EQ(a,b) (EPSILON(a,b) > std::fabs(a - b))
+/*
+ * 3.14...
+ */
 #define PI M_PI
 #define PI_D2 (PI / 2.0f)
 #define PI_M2 (PI * 2.0f)

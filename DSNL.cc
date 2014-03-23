@@ -32,7 +32,6 @@
 #include "ppapi/lib/gl/gles2/gl2ext_ppapi.h"
 #include "ppapi/utility/completion_callback_factory.h"
 
-#include "glh.h"
 #include "Fv3Color.h"
 #include "Fv3Matrix.h"
 #include "FontFutural.h"
@@ -79,6 +78,8 @@ class DSNLInstance : public pp::Instance {
     int prog_color;
     int prog_camera;
 
+    Fv3Matrix camera;
+
     FontGlyphVector *string;
 
     FailureBug* error;
@@ -92,6 +93,7 @@ public:
           height(0),
           prog_vert(0), prog_frag(0), prog(0),
           prog_position(0), prog_color(0), prog_camera(0),
+          camera(),
           string(0),
           error(0)
     {
@@ -112,7 +114,7 @@ public:
 
             std::cerr << "DSNL: Init( " << n << ": '" << v << "')" << std::endl;
         }
-        SendMessage("DSNL: Init()");
+        SendInit();
 
         return true;
     }
@@ -149,6 +151,17 @@ public:
         }
 
         glViewport(0, 0, width, height);
+
+        {
+            const float aspect = (width/height);
+
+            const float hor = aspect*height;
+            const float ver = height;
+
+            camera.ortho(-hor,+hor,-ver,+ver,-hor,+hor);
+        }
+
+        SendResize();
     }
 
 private:
@@ -196,20 +209,14 @@ private:
         glClearDepthf(1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glEnable(GL_DEPTH_TEST);
+        glDepthFunc(GL_LESS);
 
         glUseProgram(prog);
 
 
-        Fv3Matrix camera(Fv3Matrix::ID);
+        glUniformMatrix4fv(prog_camera,1,GL_FALSE,&(camera.array[0]));
 
-        const float aspect = (width/height);
-
-        glhPerspectivef2(camera,45.0,aspect,0.0,10.0);
-
-
-        glUniformMatrix4fv(prog_camera,1,GL_FALSE,camera.array);
-
-        glUniform4fv(prog_color,1,Fv3Color::White.array);
+        glUniform4fv(prog_color,1,&(Fv3Color::White.array[0]));
 
 
         glBindBuffer(GL_ARRAY_BUFFER, string->vertex_buffer);
@@ -219,11 +226,11 @@ private:
 
         glEnableVertexAttribArray(prog_position);
 
-        glVertexAttribPointer(prog_color, 4, GL_FLOAT, GL_FALSE, 0, 0);
-
-        glEnableVertexAttribArray(prog_color);
-
         glDrawArrays(GL_LINES, 0, 3);
+
+        //if (erck("Render")){
+            error = new FailureBug("Render","Some unknown rendering bug");
+        //}
     }
     bool erck(const char* fn){
         switch(glGetError()){
@@ -250,21 +257,21 @@ private:
         }
     }
     void InitBuffers(){
-        std::cerr << "DSNL: InitBuffers()" << std::endl;
 
         FontFutural font;
 
         string = new FontGlyphVector(font,"string");
 
+        string->scale(1.0/100.0);
+
         glGenBuffers(1,&(string->vertex_buffer));
 
         glBindBuffer(GL_ARRAY_BUFFER, string->vertex_buffer);
 
-        glBufferData(GL_ARRAY_BUFFER, (string->array_length*sizeof(float)), &(string->array), GL_STATIC_DRAW);
+        glBufferData(GL_ARRAY_BUFFER, (string->array_length*sizeof(float)), &(string->array[0]), GL_STATIC_DRAW);
 
     }
     void InitProgram(){
-        std::cerr << "DSNL: InitProgram()" << std::endl;
 
         prog_frag = ShaderCompile(GL_FRAGMENT_SHADER,"LineFrag",LineFrag);
         if (0 != prog_frag){
@@ -333,28 +340,56 @@ private:
             return 0;
         }
     }
-    void SendMessage(const char* m){
+    void SendLog(const char* m){
 
         std::cerr << "SendMessage: '" << m << "'." << std::endl;
 
-        pp::Var v(m);
+        pp::VarDictionary v;
+
+        v.Set(pp::Var("log"),pp::Var(true));
+        v.Set(pp::Var("message"),pp::Var(m));
+
         PostMessage(v);
     }
     void SendError(){
 
         if (0 != error){
 
+            std::cerr << "SendError: '" << error->function << "': '" << error->content << "'." << std::endl;
+
             pp::VarDictionary v;
 
             v.Set(pp::Var("failure"),pp::Var(true));
-            v.Set(pp::Var("function"),pp::Var(this->error->function));
-            v.Set(pp::Var("content"),pp::Var(this->error->content));
+            v.Set(pp::Var("function"),pp::Var(error->function));
+            v.Set(pp::Var("content"),pp::Var(error->content));
 
             delete error;
             error = 0;
 
             PostMessage(v);
         }
+    }
+    void SendResize(){
+
+        std::cerr << "SendResize: " << width << ", " << height << std::endl;
+
+        pp::VarDictionary v;
+
+        v.Set(pp::Var("resize"),pp::Var(true));
+        v.Set(pp::Var("width"),pp::Var(width));
+        v.Set(pp::Var("height"),pp::Var(height));
+
+        PostMessage(v);
+    }
+    void SendInit(){
+
+        std::cerr << "SendInit" << std::endl;
+
+        pp::VarDictionary v;
+
+        v.Set(pp::Var("init"),pp::Var(true));
+
+        PostMessage(v);
     }
 };
 /*!

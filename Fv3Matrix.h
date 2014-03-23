@@ -43,6 +43,8 @@ class Fv3Matrix : public Fv3 {
 
     virtual void copy(const float*);
 
-    void identity();
+    Fv3Matrix& identity();
+
+    Fv3Matrix& ortho(float,float,float,float,float,float);
 };
 #endif

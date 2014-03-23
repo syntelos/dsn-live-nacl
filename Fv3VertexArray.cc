@@ -197,3 +197,73 @@ void Fv3VertexArray::bounds(){
         midZ = (minZ+maxZ)/2.0;
     }
 }
+void Fv3VertexArray::fitTo(float x, float y, float z){
+
+    if (hasBounds()){
+
+        float xx = (maxX-minX);
+        float yy = (maxY-minY);
+        float zz = (maxZ-minZ);
+
+        float sx = 1.0, sy = 1.0, sz = 1.0;
+
+        if (IS_NOT_ZERO(xx)){
+            sx = (x/xx);
+        }
+
+        if (IS_NOT_ZERO(yy)){
+            sy = (y/yy);
+        }
+
+        if (IS_NOT_ZERO(zz)){
+            sz = (z/zz);
+        }
+
+        float s = fmin(sx,fmin(sy,sz));
+
+        scale(s);
+    }
+}
+void Fv3VertexArray::scale(float s){
+
+    s = static_cast<float>(s);
+
+    if (s == s && IS_NOT_ZERO(s)){
+
+        minX = FP_MAX;
+        minY = FP_MAX;
+        minZ = FP_MAX;
+
+        maxX = FP_MIN;
+        maxY = FP_MIN;
+        maxZ = FP_MIN;
+
+        unsigned int cc, ix, iy, iz;
+
+        for (cc = 0; cc < array_length; cc += 3){
+
+            ix = (cc+X);
+            iy = (cc+Y);
+            iz = (cc+Z);
+
+            float x = (array[ix] * s);
+            float y = (array[iy] * s);
+            float z = (array[iz] * s);
+
+            array[ix] = x;
+            array[iy] = y;
+            array[iz] = z;
+
+            minX = fmin(minX,x);
+            minY = fmin(minY,y);
+            minZ = fmin(minZ,z);
+
+            maxX = fmax(maxX,x);
+            maxY = fmax(maxY,y);
+            maxZ = fmax(maxZ,z);
+        }
+        midX = (minX+maxX)/2.0;
+        midY = (minY+maxY)/2.0;
+        midZ = (minZ+maxZ)/2.0;
+    }
+}

@@ -165,7 +165,15 @@ var dsnl = {
 
         var m_data = nacl_msg.data;
 
-        if (m_data.log && m_data.message){
+        if (m_data.init){
+
+            console.log("HTML: DSNL: init");
+        }
+        else if (m_data.resize){
+
+            console.log("HTML: DSNL: resize " + m_data.width + ", " + m_data.height);
+        }
+        else if (m_data.log && m_data.message){
 
             console.log(m_data.message);
         }

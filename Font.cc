@@ -22,6 +22,7 @@
 #include <cstring>
 #include <cstdlib>
 
+
 Font::Font(float em, float ascent, float descent, float leading, GLushort mode)
     : em(em), ascent(ascent), descent(descent), leading(leading), mode(mode)
 {
@@ -52,7 +53,9 @@ void FontGlyphVector::append_ltr(const char*string){
         unsigned int cc;
         for (cc = 0; cc < string_len; cc++){
 
-            const FontGlyph* glyph = font.get(string[cc]);
+            char ch = string[cc];
+
+            const FontGlyph* glyph = font.get(ch);
             if (0 == glyph){
                 /*
                  * translate string geometry for space character
