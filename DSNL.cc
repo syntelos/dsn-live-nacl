@@ -62,10 +62,10 @@ public:
     explicit DSNLInstance(PP_Instance instance)
         : pp::Instance(instance),
           callback_factory(this),
-          width(0),
-          height(0)
+          width(500),
+          height(500)
     {
-        std::cerr << "NaCl: Instantiated module instance." << std::endl;
+        std::cerr << "DSNL: Instantiated module instance." << std::endl;
     }
     virtual ~DSNLInstance()
     {}
@@ -81,9 +81,9 @@ public:
             const char* n = argn[cc];
             const char* v = argv[cc];
 
-            std::cerr << "NaCl: init (" << n << ": " << v << ")" << std::endl;
+            std::cerr << "DSNL: init (" << n << ": " << v << ")" << std::endl;
         }
-        SendMessage("NaCl: Initialized module instance.");
+        SendMessage("DSNL: Initialized module instance.");
 
         return true;
     }
@@ -99,14 +99,14 @@ public:
                 MainLoop(0);
             }
             else {
-                std::cerr << "NaCl: Failed to initialize GL context in change view." << std::endl;
+                std::cerr << "DSNL: Failed to initialize GL context in change view." << std::endl;
                 return;
             }
         }
         else {
             int32_t result = context.ResizeBuffers(new_width, new_height);
             if (0 > result){
-                std::cerr << "NaCl: Failed to resize buffers in change view." << std::endl;
+                std::cerr << "DSNL: Failed to resize buffers in change view." << std::endl;
                 return;
             }
         }
@@ -116,7 +116,7 @@ public:
 
         glViewport(0, 0, width, height);
 
-        SendMessage("NaCl: Initialized graphics in change view.");
+        SendMessage("DSNL: Initialized graphics in change view.");
     }
 
 private:
@@ -141,7 +141,7 @@ private:
                 return true;
             }
             else {
-                std::cerr << "NaCl: Unable to bind GL context." << std::endl;
+                std::cerr << "DSNL: Unable to bind GL context." << std::endl;
 
                 context = pp::Graphics3D();
                 glSetCurrentContextPPAPI(0);
@@ -149,31 +149,52 @@ private:
             }
         }
         else {
-            std::cerr << "NaCl: Unable to initialize GL PPAPI." << std::endl;
+            std::cerr << "DSNL: Unable to initialize GL PPAPI." << std::endl;
             return false;
         }
     }
     void Render() {
+
+        std::cerr << "DSNL: Render() <begin>" << std::endl;
+
         glClearColor(0.0, 0.4, 0.7, 1);
         glClearDepthf(1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glEnable(GL_DEPTH_TEST);
 
+        std::cerr << "DSNL: Render() <prog>" << std::endl;
+
         glUseProgram(prog);
+
+        std::cerr << "DSNL: Render() <init camera>" << std::endl;
 
         Fv3Matrix camera(Fv3Matrix::ID);
 
+        std::cerr << "DSNL: Render() <aspect = " << width << "/" << height << ">" << std::endl;
+
         const float aspect = (width/height);
+
+        std::cerr << "DSNL: Render() <compute perspective>" << std::endl;
 
         glhPerspectivef2(camera,45.0,aspect,0.0,10.0);
 
+        std::cerr << "DSNL: Render() <completed perspective computation, binding uniform 'u_camera'>" << std::endl;
+
         glUniformMatrix4fv(prog_camera,1,GL_FALSE,camera.array);
+
+        std::cerr << "DSNL: Render() <binding uniform 'u_color'>" << std::endl;
 
         glUniform4fv(prog_color,1,Fv3Color::White.array);
 
+        std::cerr << "DSNL: Render() <binding buffer 'string->vertex_buffer'>" << std::endl;
+
         glBindBuffer(GL_ARRAY_BUFFER, string->vertex_buffer);
 
+        std::cerr << "DSNL: Render() <draw elements 'string->count/2'>" << std::endl;
+
         glDrawElements(GL_LINES, string->count/2, GL_UNSIGNED_BYTE, 0);
+
+        std::cerr << "DSNL: Render() <end>" << std::endl;
     }
     void InitBuffers(){
 
@@ -187,6 +208,7 @@ private:
 
         glBufferData(GL_ARRAY_BUFFER, (string->array_length*sizeof(float)), string->array, GL_STATIC_DRAW);
 
+        std::cerr << "DSNL: InitBuffers() <end>" << std::endl;
     }
     void InitProgram(){
 
@@ -204,6 +226,7 @@ private:
                 }
             }
         }
+        std::cerr << "DSNL: InitProgram() <end>" << std::endl;
     }
     void MainLoop(int32_t) {
 
