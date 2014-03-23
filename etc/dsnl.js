@@ -162,61 +162,36 @@ var dsnl = {
     message: function(nacl_msg){
 
         dsnl.show();
-        try {
-            var js_data = JSON.parse(nacl_msg.data);
 
-            if (js_data.log){
+        var m_data = nacl_msg.data;
 
-                if (js_data.message){
-                    console.log(js_data.message);
-                }
-                else {
-                    alert("HTML: dsnl.message(): 'log' missing 'message'.");
-                }
+        if (m_data.log && m_data.message){
+
+            console.log(m_data.message);
+        }
+        else if (m_data.alert && m_data.message){
+
+            alert(m_data.message);
+        }
+        else if (m_data.body && m_data.content){
+
+            document.body.innerHTML = m_data.content;
+        }
+        else if (m_data.failure && m_data.content){
+
+            dsnl.unavailable();
+
+            try {
+                var el_p3 = document.getElementById("unp3");
+
+                el_p3.innerHTML = m_data.content;
             }
-            else if (js_data.alert){
-
-                if (js_data.message){
-                    alert(js_data.message);
-                }
-                else {
-                    alert("HTML: dsnl.message(): 'alert' missing 'message'.");
-                }
-            }
-            else if (js_data.body){
-
-                if (js_data.content){
-                    document.body.innerHTML = js_data.content;
-                }
-                else {
-                    alert("HTML: dsnl.message(): 'body' missing 'content'.");
-                }
-            }
-            else if (js_data.failure){
-
-                if (js_data.content){
-
-                    dsnl.unavailable();
-
-                    try {
-                        var el_p3 = document.getElementById("unp3");
-
-                        el_p3.innerHTML = js_data.content;
-                    }
-                    catch (x){
-                        alert("HTML: dsnl.message(): error processing 'failure' / 'content': " + x);
-                    }
-                }
-                else {
-                    alert("HTML: dsnl.message(): 'failure' missing 'content'.");
-                }
-            }
-            else {
-                console.log(nacl_msg.data);
+            catch (x){
+                alert("HTML: dsnl.message(): error processing 'failure' / 'content': " + x);
             }
         }
-        catch (x){
-            console.log(nacl_msg.data);
+        else {
+            console.log(m_data);
         }
     },
     crash: function(evt){

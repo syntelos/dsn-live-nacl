@@ -39,6 +39,18 @@
 #include "Shaders.h"
 
 /*!
+ */
+class FailureBug {
+public:
+    const char* function;
+    const char* content;
+
+    FailureBug(const char* f, const char* m)
+        : function(f), content(m)
+    {}
+};
+
+/*!
  * There's only one instance of DSNL per module.
  */
 class DSNLInstance : public pp::Instance {
@@ -55,9 +67,9 @@ class DSNLInstance : public pp::Instance {
     int prog_color;
     int prog_camera;
 
-    bool running;
-
     FontGlyphVector *string;
+
+    FailureBug* error;
 
 public:
 
@@ -68,8 +80,8 @@ public:
           height(0),
           prog_vert(0), prog_frag(0), prog(0),
           prog_position(0), prog_color(0), prog_camera(0),
-          running(true),
-          string(0)
+          string(0),
+          error(0)
     {
         std::cerr << "DSNL: DSNL()" << std::endl;
     }
@@ -203,6 +215,8 @@ private:
         glVertexAttribPointer(prog_position, 3, GL_FLOAT, GL_FALSE, 0, 0);
 
         if (erck("VertexAttribPointer")){
+
+            this->error = new FailureBug("VertexAttribPointer","Vertex shader attribute binding bug");
             return;
         }
 
@@ -229,27 +243,21 @@ private:
         switch(glGetError()){
         case GL_INVALID_ENUM:
             std::cerr << "DSNL Error: " << fn << ": INVALID_ENUM" << std::endl;
-            running = false;
             return true;
         case GL_INVALID_VALUE:
             std::cerr << "DSNL Error: " << fn << ": INVALID_VALUE" << std::endl;
-            running = false;
             return true;
         case GL_INVALID_OPERATION:
             std::cerr << "DSNL Error: " << fn << ": INVALID_OPERATION" << std::endl;
-            running = false;
             return true;
         case GL_INVALID_FRAMEBUFFER_OPERATION:
             std::cerr << "DSNL Error: " << fn << ": INVALID_FRAMEBUFFER_OPERATION" << std::endl;
-            running = false;
             return true;
         case GL_OUT_OF_MEMORY:
             std::cerr << "DSNL Error: " << fn << ": OUT_OF_MEMORY" << std::endl;
-            running = false;
             return true;
         case GL_CONTEXT_LOST:
             std::cerr << "DSNL Error: " << fn << ": CONTEXT_LOST" << std::endl;
-            running = false;
             return true;
         default:
             return false;
@@ -293,12 +301,12 @@ private:
 
         Render();
 
-        if (running){
+        if (0 == error){
 
             context.SwapBuffers(callback_factory.NewCallback(&DSNLInstance::MainLoop));
         }
         else {
-            SendMessage("{\"failure\":true,\"content\":\"Vertex shader attribute binding bug\"}");
+            SendError();
         }
     }
     static GLuint ShaderCompile(GLenum type, const char* name, const char* text){
@@ -346,6 +354,22 @@ private:
 
         pp::Var v(m);
         PostMessage(v);
+    }
+    void SendError(){
+
+        if (0 != error){
+
+            pp::VarDictionary v;
+
+            v.Set(pp::Var("failure"),pp::Var(true));
+            v.Set(pp::Var("function"),pp::Var(this->error->function));
+            v.Set(pp::Var("content"),pp::Var(this->error->content));
+
+            delete error;
+            error = 0;
+
+            PostMessage(v);
+        }
     }
 };
 /*!
