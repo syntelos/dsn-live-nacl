@@ -153,10 +153,8 @@ public:
         glViewport(0, 0, width, height);
 
         {
-            const float aspect = (width/height);
-
-            const float hor = aspect*height;
-            const float ver = height;
+            const float hor = 1024.0;
+            const float ver = 768.0;
 
             camera.ortho(-hor,+hor,-ver,+ver,-hor,+hor);
         }
@@ -262,7 +260,7 @@ private:
 
         string = new FontGlyphVector(font,"Status: in development");
 
-        string->center();
+        string->scale(2.0).center();
 
         glGenBuffers(1,&(string->vertex_buffer));
 
