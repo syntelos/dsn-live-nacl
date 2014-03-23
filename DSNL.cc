@@ -51,6 +51,7 @@ class DSNLInstance : public pp::Instance {
     GLuint prog_vert;
     GLuint prog_frag;
     GLuint prog;
+    GLuint prog_position;
     GLuint prog_color;
     GLuint prog_camera;
 
@@ -61,11 +62,9 @@ public:
 
     explicit DSNLInstance(PP_Instance instance)
         : pp::Instance(instance),
-          callback_factory(this),
-          width(500),
-          height(500)
+          callback_factory(this)
     {
-        std::cerr << "DSNL: Instantiated module instance." << std::endl;
+        std::cerr << "DSNL: DSNL()" << std::endl;
     }
     virtual ~DSNLInstance()
     {}
@@ -81,47 +80,58 @@ public:
             const char* n = argn[cc];
             const char* v = argv[cc];
 
-            std::cerr << "DSNL: init (" << n << ": " << v << ")" << std::endl;
+            std::cerr << "DSNL: Init( " << n << ": '" << v << "')" << std::endl;
         }
-        SendMessage("DSNL: Initialized module instance.");
+        SendMessage("DSNL: Init()");
 
         return true;
     }
     virtual void DidChangeView(const pp::View& view) {
+
+        std::cerr << "DSNL: DidChangeView()" << std::endl;
+
         pp::Rect rect = view.GetRect();
         int32_t new_width = rect.width();
         int32_t new_height = rect.height();
 
         if (context.is_null()) {
+            std::cerr << "DSNL: DidChangeView() <init>" << std::endl;
+
             if (InitGL(new_width, new_height)){
+
                 InitProgram();
                 InitBuffers();
                 MainLoop(0);
             }
             else {
-                std::cerr << "DSNL: Failed to initialize GL context in change view." << std::endl;
+                std::cerr << "DSNL: DidChangeView(): Failed to initialize GL context in change view." << std::endl;
                 return;
             }
         }
         else {
+            std::cerr << "DSNL: DidChangeView() <resize>" << std::endl;
+
             int32_t result = context.ResizeBuffers(new_width, new_height);
             if (0 > result){
-                std::cerr << "DSNL: Failed to resize buffers in change view." << std::endl;
+                std::cerr << "DSNL: DidChangeView(): Failed to resize buffers in change view." << std::endl;
                 return;
+            }
+            else {
+                width = new_width;
+                height = new_height;
             }
         }
 
-        width = new_width;
-        height = new_height;
-
         glViewport(0, 0, width, height);
 
-        SendMessage("DSNL: Initialized graphics in change view.");
+        std::cerr << "DSNL: DidChangeView() <end> ( w: " << this->width << ", h: " << this->height << ")" << std::endl;
     }
 
 private:
 
     bool InitGL(int32_t new_width, int32_t new_height) {
+
+        std::cerr << "DSNL: InitGL()" << std::endl;
 
         if (glInitializePPAPI(pp::Module::Get()->get_browser_interface())){
 
@@ -138,10 +148,15 @@ private:
             if (BindGraphics(context)){
 
                 glSetCurrentContextPPAPI(context.pp_resource());
+
+                width = new_width;
+
+                height = new_height;
+
                 return true;
             }
             else {
-                std::cerr << "DSNL: Unable to bind GL context." << std::endl;
+                std::cerr << "DSNL: InitGL(): Unable to bind GL context." << std::endl;
 
                 context = pp::Graphics3D();
                 glSetCurrentContextPPAPI(0);
@@ -149,54 +164,53 @@ private:
             }
         }
         else {
-            std::cerr << "DSNL: Unable to initialize GL PPAPI." << std::endl;
+            std::cerr << "DSNL: InitGL(): Unable to initialize GL PPAPI." << std::endl;
             return false;
         }
     }
     void Render() {
-
-        std::cerr << "DSNL: Render() <begin>" << std::endl;
 
         glClearColor(0.0, 0.4, 0.7, 1);
         glClearDepthf(1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glEnable(GL_DEPTH_TEST);
 
-        std::cerr << "DSNL: Render() <prog>" << std::endl;
 
         glUseProgram(prog);
 
-        std::cerr << "DSNL: Render() <init camera>" << std::endl;
 
         Fv3Matrix camera(Fv3Matrix::ID);
 
-        std::cerr << "DSNL: Render() <aspect = " << width << "/" << height << ">" << std::endl;
-
         const float aspect = (width/height);
-
-        std::cerr << "DSNL: Render() <compute perspective>" << std::endl;
 
         glhPerspectivef2(camera,45.0,aspect,0.0,10.0);
 
-        std::cerr << "DSNL: Render() <completed perspective computation, binding uniform 'u_camera'>" << std::endl;
 
         glUniformMatrix4fv(prog_camera,1,GL_FALSE,camera.array);
 
-        std::cerr << "DSNL: Render() <binding uniform 'u_color'>" << std::endl;
-
         glUniform4fv(prog_color,1,Fv3Color::White.array);
 
-        std::cerr << "DSNL: Render() <binding buffer 'string->vertex_buffer'>" << std::endl;
+        std::cerr << "DSNL: Render() <bind 'string'>" << std::endl;
 
         glBindBuffer(GL_ARRAY_BUFFER, string->vertex_buffer);
 
-        std::cerr << "DSNL: Render() <draw elements 'string->count/2'>" << std::endl;
+        std::cerr << "DSNL: Render() <position 'string'>" << std::endl;
 
-        glDrawElements(GL_LINES, string->count/2, GL_UNSIGNED_BYTE, 0);
+        glVertexAttribPointer(prog_position, 3, GL_FLOAT, GL_FALSE, 0, 0);
+
+        std::cerr << "DSNL: Render() <enable position 'string'>" << std::endl;
+
+        glEnableVertexAttribArray(prog_position);
+
+        std::cerr << "DSNL: Render() <draw elements 'string'>" << std::endl;
+
+        glDrawElements(GL_LINES, string->elements, GL_FLOAT, 0);
 
         std::cerr << "DSNL: Render() <end>" << std::endl;
     }
     void InitBuffers(){
+
+        std::cerr << "DSNL: InitBuffers()" << std::endl;
 
         FontFutural font;
 
@@ -208,9 +222,9 @@ private:
 
         glBufferData(GL_ARRAY_BUFFER, (string->array_length*sizeof(float)), string->array, GL_STATIC_DRAW);
 
-        std::cerr << "DSNL: InitBuffers() <end>" << std::endl;
     }
     void InitProgram(){
+        std::cerr << "DSNL: InitProgram()" << std::endl;
 
         prog_frag = ShaderCompile(GL_FRAGMENT_SHADER,"LineFrag",LineFrag);
         if (0 != prog_frag){
@@ -221,12 +235,12 @@ private:
                 prog = ProgramLink(prog_frag,prog_vert,"Line");
                 if (0 != prog){
 
+                    prog_position = glGetUniformLocation(prog,"a_position");
                     prog_camera = glGetUniformLocation(prog,"u_camera");
                     prog_color = glGetUniformLocation(prog,"u_color");
                 }
             }
         }
-        std::cerr << "DSNL: InitProgram() <end>" << std::endl;
     }
     void MainLoop(int32_t) {
 

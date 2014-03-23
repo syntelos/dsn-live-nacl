@@ -23,71 +23,79 @@
 Fv3VertexArray::Fv3VertexArray()
     : array_length(0), 
       array(0),
-      minX(0), midX(0), maxX(0),
-      minY(0), midY(0), maxY(0),
-      minZ(0), midZ(0), maxZ(0),
+      minX(FP_MAX), midX(ZERO), maxX(FP_MIN),
+      minY(FP_MAX), midY(ZERO), maxY(FP_MIN),
+      minZ(FP_MAX), midZ(ZERO), maxZ(FP_MIN),
       type(0),
-      vertex_buffer(0)
+      vertex_buffer(0),
+      elements(0)
 {
 }
 Fv3VertexArray::Fv3VertexArray(GLushort type)
     : array_length(0), 
       array(0),
-      minX(0), midX(0), maxX(0),
-      minY(0), midY(0), maxY(0),
-      minZ(0), midZ(0), maxZ(0),
+      minX(FP_MAX), midX(ZERO), maxX(FP_MIN),
+      minY(FP_MAX), midY(ZERO), maxY(FP_MIN),
+      minZ(FP_MAX), midZ(ZERO), maxZ(FP_MIN),
       type(type),
-      vertex_buffer(0)
+      vertex_buffer(0),
+      elements(0)
 {
 }
 Fv3VertexArray::Fv3VertexArray(unsigned int count)
     : array_length(count), 
-      array((float*)std::malloc(count*sizeof(float))),
-      minX(0), midX(0), maxX(0),
-      minY(0), midY(0), maxY(0),
-      minZ(0), midZ(0), maxZ(0),
+      array((float*)std::calloc(count,sizeof(float))),
+      minX(FP_MAX), midX(ZERO), maxX(FP_MIN),
+      minY(FP_MAX), midY(ZERO), maxY(FP_MIN),
+      minZ(FP_MAX), midZ(ZERO), maxZ(FP_MIN),
       type(0),
-      vertex_buffer(0)
+      vertex_buffer(0),
+      elements(0)
 {
 }
 Fv3VertexArray::Fv3VertexArray(GLushort type, unsigned int count)
     : array_length(count), 
-      array((float*)std::malloc(count*sizeof(float))),
-      minX(0), midX(0), maxX(0),
-      minY(0), midY(0), maxY(0),
-      minZ(0), midZ(0), maxZ(0),
+      array((float*)std::calloc(count,sizeof(float))),
+      minX(FP_MAX), midX(ZERO), maxX(FP_MIN),
+      minY(FP_MAX), midY(ZERO), maxY(FP_MIN),
+      minZ(FP_MAX), midZ(ZERO), maxZ(FP_MIN),
       type(type),
-      vertex_buffer(0)
+      vertex_buffer(0),
+      elements(0)
 {
 }
 Fv3VertexArray::Fv3VertexArray(unsigned int count, float* copy)
     : array_length(count), array(0), 
-      minX(0), midX(0), maxX(0),
-      minY(0), midY(0), maxY(0),
-      minZ(0), midZ(0), maxZ(0),
+      minX(FP_MAX), midX(ZERO), maxX(FP_MIN),
+      minY(FP_MAX), midY(ZERO), maxY(FP_MIN),
+      minZ(FP_MAX), midZ(ZERO), maxZ(FP_MIN),
       type(0),
-      vertex_buffer(0)
+      vertex_buffer(0),
+      elements(0)
 {
     this->copy(copy);
 }
 Fv3VertexArray::Fv3VertexArray(GLushort type, unsigned int count, float* copy)
     : array_length(count), array(0), 
-      minX(0), midX(0), maxX(0),
-      minY(0), midY(0), maxY(0),
-      minZ(0), midZ(0), maxZ(0),
+      minX(FP_MAX), midX(ZERO), maxX(FP_MIN),
+      minY(FP_MAX), midY(ZERO), maxY(FP_MIN),
+      minZ(FP_MAX), midZ(ZERO), maxZ(FP_MIN),
       type(type),
-      vertex_buffer(0)
+      vertex_buffer(0),
+      elements(0)
 {
     this->copy(copy);
 }
 Fv3VertexArray::Fv3VertexArray(const Fv3VertexArray& copy)
     : array_length(copy.array_length), array(0),
-      minX(0), midX(0), maxX(0),
-      minY(0), midY(0), maxY(0),
-      minZ(0), midZ(0), maxZ(0),
+      minX(copy.minX), midX(copy.midX), maxX(copy.maxX),
+      minY(copy.minY), midY(copy.midY), maxY(copy.maxY),
+      minZ(copy.minZ), midZ(copy.midZ), maxZ(copy.maxZ),
       type(copy.type),
-      vertex_buffer(0)
+      vertex_buffer(0),
+      elements(copy.elements)
 {
+    this->copy(copy.array);
 }
 Fv3VertexArray::~Fv3VertexArray()
 {
@@ -104,15 +112,32 @@ float* Fv3VertexArray::data(){
 void Fv3VertexArray::copy(const float* copy){
     if (0 != array_length){
 
+        const std::size_t msz = array_length*sizeof(float);
+
         if (0 == array){
-            array = (float*)std::malloc(array_length*sizeof(float));
+            array = (float*)std::malloc(msz);
         }
-        std::memcpy(array,copy,array_length*sizeof(float));
+        std::memcpy(array,copy,msz);
     }
 }
 void Fv3VertexArray::append(const Fv3VertexArray& src){
 
     append(src.array_length,src.array);
+
+    if (src.hasBounds()){
+
+        minX = fmin(minX,src.minX);
+        minY = fmin(minY,src.minY);
+        minZ = fmin(minZ,src.minZ);
+
+        maxX = fmax(maxX,src.maxX);
+        maxY = fmax(maxY,src.maxY);
+        maxZ = fmax(maxZ,src.maxZ);
+
+        midX = (minX+maxX)/2.0;
+        midY = (minY+maxY)/2.0;
+        midZ = (minZ+maxZ)/2.0;
+    }
 }
 void Fv3VertexArray::append(const unsigned int src_array_length, const float* src_array){
 
@@ -136,6 +161,12 @@ void Fv3VertexArray::append(const unsigned int src_array_length, const float* sr
     else {
         array_length = 0;
     }
+}
+bool Fv3VertexArray::hasBounds() const {
+    return (FP_MAX != minX && ZERO != midX && FP_MIN != maxX);
+}
+bool Fv3VertexArray::hasNotBounds() const {
+    return (FP_MAX == minX && ZERO == midX && FP_MIN == maxX);
 }
 void Fv3VertexArray::bounds(){
     if (0 != array && 0 < array_length){

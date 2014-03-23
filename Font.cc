@@ -31,21 +31,13 @@ Font::~Font(){
 FontGlyphVector::FontGlyphVector(const Font& font)
     : Fv3VertexArray(font.mode),
       xp(0),
-      font(font),
-      minX(0), midX(0), maxX(0),
-      minY(0), midY(0), maxY(0),
-      minZ(0), midZ(0), maxZ(0),
-      count(0)
+      font(font)
 {
 }
 FontGlyphVector::FontGlyphVector(const Font& font, const char* string)
     : Fv3VertexArray(font.mode),
       xp(0),
-      font(font),
-      minX(0), midX(0), maxX(0),
-      minY(0), midY(0), maxY(0),
-      minZ(0), midZ(0), maxZ(0),
-      count(0)
+      font(font)
 {
     append_ltr(string);
 }
@@ -116,14 +108,14 @@ void FontGlyphVector::append_ltr(const char*string){
                      * increment string geometry
                      */
                     xp += glyph->maxX;
-
                     /*
-                     * update glyph vector state
+                     * update vertex array
                      */
-                    count = (nlen/3);
+                    elements = (nlen/3);
                 }
                 else {
-                    count = 0;
+                    elements = 0;
+                    break;
                 }
             }
             midX = (minX+maxX)/2.0;

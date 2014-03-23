@@ -67,18 +67,6 @@ class FontGlyphVector : public Fv3VertexArray {
  public:
     const Font& font;
 
-    float minX;
-    float midX;
-    float maxX;
-    float minY;
-    float midY;
-    float maxY;
-    float minZ;
-    float midZ;
-    float maxZ;
-
-    unsigned int count;  // number of 3-vertices
-
     /*
      */
     FontGlyphVector(const Font&);
