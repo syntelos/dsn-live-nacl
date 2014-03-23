@@ -43,21 +43,22 @@ embed#nacl_module {
     height: 98%;
     z-index: 0;
 }
-p.failure1 {
-    background-color: #0066b3;
-    color: #ffffff;
-    margin-top: 100px;
-    margin-left: 80px;
-    font-weight: 900;
-    font-size: 18px;
-    z-index: 1;
-}
-p.failure2 {
-    background-color: #0066b3;
-    color: #efefef;
+p.failure {
     margin-top: 10px;
     margin-left: 100px;
     font-weight: 900;
     font-size: 14px;
     z-index: 1;
+}
+p.failure.f1 {
+    color: #ffffff;
+    margin-top: 80px;
+    margin-left: 80px;
+    font-size: 18px;
+}
+p.failure.f2 {
+    color: #efefef;
+}
+p.failure.f3 {
+    color: #efcfef;
 }

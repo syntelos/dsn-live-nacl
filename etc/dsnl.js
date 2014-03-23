@@ -39,6 +39,23 @@ function dsnlMessage(nacl_msg){
                 alert("HTML: dsnlMessage(): 'body' missing 'content'.");
             }
         }
+        else if (js_data.failure){
+
+            if (js_data.content){
+                dsnlUnavailable();
+                try {
+                    var el_p3 = document.getElementById("unp3");
+
+                    el_p3.innerHTML = js_data.content;
+                }
+                catch (x){
+                    alert("HTML: dsnlMessage(): error processing 'failure' / 'content': " + x);
+                }
+            }
+            else {
+                alert("HTML: dsnlMessage(): 'failure' missing 'content'.");
+            }
+        }
         else {
             console.log(nacl_msg.data);
         }

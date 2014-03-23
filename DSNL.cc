@@ -307,6 +307,9 @@ private:
 
             context.SwapBuffers(callback_factory.NewCallback(&DSNLInstance::MainLoop));
         }
+        else {
+            SendMessage("{\"failure\":true,\"content\":\"Vertex shader attribute binding bug\"}");
+        }
     }
     static GLuint ShaderCompile(GLenum type, const char* name, const char* text){
         GLuint shader = glCreateShader(type);
