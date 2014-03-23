@@ -38,7 +38,19 @@
 #include "FontFutural.h"
 #include "Shaders.h"
 
-/*!
+/*
+ * This is a way to push a bug that reports itself.
+ *
+ *    void Render(){
+ *        .
+ *        .
+ *        .
+ *        if (erck("VertexAttribPointer")){
+ *
+ *            this->error = new FailureBug("VertexAttribPointer","Vertex shader attribute binding bug");
+ *            return;
+ *        }
+ *    }
  */
 class FailureBug {
 public:
@@ -83,7 +95,6 @@ public:
           string(0),
           error(0)
     {
-        std::cerr << "DSNL: DSNL()" << std::endl;
     }
     virtual ~DSNLInstance()
     {}
@@ -107,14 +118,11 @@ public:
     }
     virtual void DidChangeView(const pp::View& view) {
 
-        std::cerr << "DSNL: DidChangeView()" << std::endl;
-
         pp::Rect rect = view.GetRect();
         int32_t new_width = rect.width();
         int32_t new_height = rect.height();
 
         if (context.is_null()) {
-            std::cerr << "DSNL: DidChangeView() <init>" << std::endl;
 
             if (InitGL(new_width, new_height)){
 
@@ -128,7 +136,6 @@ public:
             }
         }
         else {
-            std::cerr << "DSNL: DidChangeView() <resize>" << std::endl;
 
             int32_t result = context.ResizeBuffers(new_width, new_height);
             if (0 > result){
@@ -142,15 +149,11 @@ public:
         }
 
         glViewport(0, 0, width, height);
-
-        std::cerr << "DSNL: DidChangeView() <end> ( w: " << this->width << ", h: " << this->height << ")" << std::endl;
     }
 
 private:
 
     bool InitGL(int32_t new_width, int32_t new_height) {
-
-        std::cerr << "DSNL: InitGL()" << std::endl;
 
         if (glInitializePPAPI(pp::Module::Get()->get_browser_interface())){
 
@@ -214,30 +217,13 @@ private:
 
         glVertexAttribPointer(prog_position, 3, GL_FLOAT, GL_FALSE, 0, 0);
 
-        if (erck("VertexAttribPointer")){
-
-            this->error = new FailureBug("VertexAttribPointer","Vertex shader attribute binding bug");
-            return;
-        }
-
         glEnableVertexAttribArray(prog_position);
-
-        if (erck("EnableVertexAttribArray")){
-            return;
-        }
 
         glVertexAttribPointer(prog_color, 4, GL_FLOAT, GL_FALSE, 0, 0);
 
         glEnableVertexAttribArray(prog_color);
 
-
-        std::cerr << "Render: DrawElements" << std::endl;
-
-        glDrawElements(GL_LINES, string->elements, GL_FLOAT, 0);
-
-        if (erck("DrawElements")){
-            return;
-        }
+        glDrawArrays(GL_LINES, 0, 3);
     }
     bool erck(const char* fn){
         switch(glGetError()){
@@ -264,7 +250,6 @@ private:
         }
     }
     void InitBuffers(){
-
         std::cerr << "DSNL: InitBuffers()" << std::endl;
 
         FontFutural font;
@@ -290,7 +275,7 @@ private:
                 prog = ProgramLink(prog_frag,prog_vert,"Line");
                 if (0 != prog){
 
-                    prog_position = glGetUniformLocation(prog,"a_position");
+                    prog_position = glGetAttribLocation(prog,"a_position");
                     prog_camera = glGetUniformLocation(prog,"u_camera");
                     prog_color = glGetUniformLocation(prog,"u_color");
                 }

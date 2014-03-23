@@ -146,10 +146,10 @@ var dsnl = {
     validate: function(){
 
         if (dsnl.running){
-            console.log("HTML dsnl.validate(): OK");
+            console.log("HTML: dsnl.validate(): OK");
         }
         else {
-            console.log("HTML dsnl.validate(): NG");
+            console.log("HTML: dsnl.validate(): NG");
 
             dsnl.unavailable();
         }

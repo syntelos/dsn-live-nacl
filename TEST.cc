@@ -41,7 +41,18 @@ int main(int argc, char** argv){
 
     std::printf("string len_fv3: %d, minX: %f, midX: %f, maxX: %f\n",string->array_length,string->minX, string->midX, string->maxX);
 
+    std::cout << "{" << std::endl;
 
+    unsigned int cc;
+    float x, y, z;
+    for (cc = 0; cc < string->array_length; ){
+        x = string->array[cc++];
+        y = string->array[cc++];
+        z = string->array[cc++];
+
+        std::cout << '\t' << x << ", " << y << ", " << z << std::endl;
+    }
+    std::cout << "}" << std::endl;
     return 0;
 
 }
